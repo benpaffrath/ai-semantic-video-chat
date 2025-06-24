@@ -24,9 +24,10 @@ resource "aws_lambda_function" "graphql-function" {
 
   environment {
     variables = {
-      ENVIRONMENT                  = var.environment
-      TRANSCRIPTIONS_SQS_QUEUE_ARN = var.sqs_output
-      CHATS_LAMBDA_ARN             = var.chats_lambda_arn
+      ENVIRONMENT                    = var.environment
+      TRANSCRIPTIONS_SQS_QUEUE_ARN   = var.sqs_output
+      CHATS_LAMBDA_ARN               = var.chats_lambda_arn
+      SEMANTIC_VIDEO_CHAT_TABLE_NAME = var.dynamodb_table_name
     }
   }
 

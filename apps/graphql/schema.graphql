@@ -29,7 +29,7 @@ type Video {
     id: String!
     title: String!
     key: String!
-    duration: int
+    duration: Int
     type: String
     status: VideoStatus
     createdAt: String
@@ -48,5 +48,5 @@ type Query {
 }
 
 type Mutation {
-    _empty: String
+    createKnowledgeRoom(title: String!): KnowledgeRoom
 }

@@ -1,6 +1,7 @@
 import { createYoga } from 'graphql-yoga'
 import { createServer } from 'node:http'
 import schema from './schema'
+import { context } from './context'
 import dotenv from 'dotenv'
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
 
@@ -9,6 +10,7 @@ dotenv.config()
 const yoga = createYoga({
     graphqlEndpoint: '/graphql',
     schema,
+    context,
 })
 
 export async function handler(
