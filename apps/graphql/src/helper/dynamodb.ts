@@ -10,6 +10,7 @@ const client = new DynamoDBClient({
     region: 'eu-central-1',
 })
 
+// Function to create knowledge rooms in the dynamodb
 export async function insertKnowledeRoom(
     title: string,
     userId: string,
