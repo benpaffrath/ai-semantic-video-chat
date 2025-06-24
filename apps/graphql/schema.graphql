@@ -44,7 +44,7 @@ type Message {
 }
 
 type Query {
-    _empty: String
+    listKnowledgeRooms: [KnowledgeRoom]
 }
 
 type Mutation {

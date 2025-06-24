@@ -1,8 +1,19 @@
 import { Context } from './context'
-import { insertKnowledeRoom } from './helper/dynamodb'
+import {
+    insertKnowledgeRoom,
+    listKnowledgeRoomsByUserId,
+} from './helper/dynamodb'
 
 const clientResolvers = {
-    Query: {},
+    Query: {
+        listKnowledgeRooms: async (_, __, context: Context) => {
+            try {
+                return await listKnowledgeRoomsByUserId(context.userId)
+            } catch (e) {
+                console.error(e)
+            }
+        },
+    },
     Mutation: {
         createKnowledgeRoom: async (
             _,
@@ -10,7 +21,7 @@ const clientResolvers = {
             context: Context,
         ) => {
             try {
-                return await insertKnowledeRoom(title, context.userId)
+                return await insertKnowledgeRoom(title, context.userId)
             } catch (e) {
                 console.error(e)
             }

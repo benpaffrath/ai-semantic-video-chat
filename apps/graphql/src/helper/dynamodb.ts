@@ -2,6 +2,7 @@ import {
     DynamoDBClient,
     PutItemCommand,
     PutItemCommandInput,
+    QueryCommand,
 } from '@aws-sdk/client-dynamodb'
 import { nanoid } from 'nanoid'
 import { KnowledgeRoom } from '../types'
@@ -11,7 +12,7 @@ const client = new DynamoDBClient({
 })
 
 // Function to create knowledge rooms in the dynamodb
-export async function insertKnowledeRoom(
+export async function insertKnowledgeRoom(
     title: string,
     userId: string,
 ): Promise<KnowledgeRoom> {
@@ -38,6 +39,30 @@ export async function insertKnowledeRoom(
         title,
         createdAt,
     }
+}
+
+// Query all knowledge rooms by userId (secondary index)
+export async function listKnowledgeRoomsByUserId(
+    userId: string,
+): Promise<KnowledgeRoom[]> {
+    const command = new QueryCommand({
+        TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
+        IndexName: 'UserIdIndex',
+        KeyConditionExpression: 'userId = :uid',
+        ExpressionAttributeValues: {
+            ':uid': { S: userId },
+        },
+    })
+
+    const result = await client.send(command)
+
+    return (
+        result?.Items?.map((item) => ({
+            id: item.PK.S!.split('#')[1],
+            title: item.title.S!,
+            createdAt: item.createdAt.S!,
+        })) || []
+    )
 }
 
 export default client
