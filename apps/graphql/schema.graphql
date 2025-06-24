@@ -1,3 +1,48 @@
+enum VideoStatus {
+    UPLOADED
+    IN_QUEUE
+    TRANSCRIPTION_CREATING
+    TRANSCRIPTION_DONE
+    EMBEDDINGS_CREATING
+    EMBEDDINGS_DONE
+    DONE
+}
+
+enum MessageType {
+    TEXT
+    VOICE
+}
+
+type KnowledgeRoom {
+    id: String!
+    title: String!
+    createdAt: String
+}
+
+type Conversation {
+    id: String!
+    title: String!
+    createdAt: String
+}
+
+type Video {
+    id: String!
+    title: String!
+    key: String!
+    duration: int
+    type: String
+    status: VideoStatus
+    createdAt: String
+}
+
+type Message {
+    id: String!
+    fromUser: Boolean!
+    content: String!
+    type: MessageType!
+    createdAt: String
+}
+
 type Query {
     _empty: String
 }
