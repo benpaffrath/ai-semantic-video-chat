@@ -45,8 +45,10 @@ type Message {
 
 type Query {
     listKnowledgeRooms: [KnowledgeRoom]
+    listConversations(knowledgeRoomId: String!): [Conversation]
 }
 
 type Mutation {
     createKnowledgeRoom(title: String!): KnowledgeRoom
+    createConversation(title: String!, knowledgeRoomId: String!): Conversation
 }
