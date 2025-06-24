@@ -1,0 +1,7 @@
+**/node_modules
+**/dist
+**/package
+**/__pycache__
+**/.terraform
+
+**/.DS_Store

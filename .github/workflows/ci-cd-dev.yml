@@ -1,0 +1,69 @@
+name: Develop CI / CD
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: "npm"
+
+      - name: Install make
+        run: sudo apt-get update && sudo apt-get install -y make
+
+      - name: Install, lint, build, and package
+        run: make all-except-frontend-build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1  
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform init
+        working-directory: ./infrastructure
+        run: terraform init
+
+      - name: Select Terraform Workspace
+        working-directory: ./infrastructure
+        run: terraform workspace select dev || terraform workspace new dev  
+
+      - name: Terraform plan
+        working-directory: ./infrastructure
+        run: terraform plan -out=tfplan  
+
+      - name: Terraform apply
+        working-directory: ./infrastructure
+        run: terraform apply -input=false tfplan
+
+      - name: Capture Terraform Output for frontend
+        working-directory: ./infrastructure
+        run: terraform output > ../apps/frontend/.env
+
+      - name: Build frontend
+        run: make build-frontend
+
+      - name: Get bucket name from .env file
+        id: get_bucket
+        run: |
+          bucket_name=$(grep -E '^STATIC_HOSTING_BUCKET_NAME\s*=\s*".*"$' ./apps/frontend/.env | cut -d '=' -f 2 | tr -d ' "')
+          echo "Extracted bucket_name: '${bucket_name}'"
+          echo "BUCKET_NAME=${bucket_name}" >> $GITHUB_ENV
+
+      - name: Sync frontend build to S3 bucket
+        run: aws s3 sync ./apps/frontend/out s3://$BUCKET_NAME --delete --acl public-read
