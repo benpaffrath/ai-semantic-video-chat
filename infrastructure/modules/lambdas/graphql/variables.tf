@@ -33,6 +33,11 @@ variable "dynamodb_table_arn" {
   default     = ""
 }
 
+variable "dynamodb_table_name" {
+  description = "The name of the DynamoDB"
+  default     = ""
+}
+
 variable "s3_video_bucket_arn" {
   description = "Arn for the s3 storage bucket"
   default     = ""

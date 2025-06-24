@@ -28,6 +28,7 @@ module "transcription" {
   sqs_trigger          = module.sqs.sqs_transcription_queue_arn
   sqs_output           = module.sqs.sqs_embeddings_queue_arn
   dynamodb_table_arn   = module.database.dynamodb_table_arn
+  dynamodb_table_name  = module.database.dynamodb_table_name
   openai_secret_arn    = module.secrets.openai_secret_arn
   langsmith_secret_arn = module.secrets.langsmith_secret_arn
   s3_video_bucket_arn  = module.storage.s3_video_bucket_arn
@@ -43,6 +44,7 @@ module "embeddings" {
   domain_name          = local.domain_name
   sqs_trigger          = module.sqs.sqs_embeddings_queue_arn
   dynamodb_table_arn   = module.database.dynamodb_table_arn
+  dynamodb_table_name  = module.database.dynamodb_table_name
   openai_secret_arn    = module.secrets.openai_secret_arn
   pinecone_secret_arn  = module.secrets.pinecone_secret_arn
   langsmith_secret_arn = module.secrets.langsmith_secret_arn
@@ -69,6 +71,7 @@ module "graphql" {
   domain_name         = local.domain_name
   sqs_output          = module.sqs.sqs_transcription_queue_arn
   dynamodb_table_arn  = module.database.dynamodb_table_arn
+  dynamodb_table_name = module.database.dynamodb_table_name
   s3_video_bucket_arn = module.storage.s3_video_bucket_arn
   chats_lambda_arn    = module.chats.chats_lambda_arn
   tags                = local.tags

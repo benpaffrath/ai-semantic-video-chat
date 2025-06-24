@@ -38,6 +38,11 @@ variable "dynamodb_table_arn" {
   default     = ""
 }
 
+variable "dynamodb_table_name" {
+  description = "The name of the DynamoDB"
+  default     = ""
+}
+
 variable "openai_secret_arn" {
   description = "The ARN of the OpenAI secret"
   default     = ""

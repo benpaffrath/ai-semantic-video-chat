@@ -28,6 +28,7 @@ resource "aws_lambda_function" "transcription-function" {
     variables = {
       ENVIRONMENT              = var.environment
       EMBEDDINGS_SQS_QUEUE_ARN = var.sqs_output
+      SEMANTIC_VIDEO_CHAT_TABLE_NAME = var.dynamodb_table_name
     }
   }
 

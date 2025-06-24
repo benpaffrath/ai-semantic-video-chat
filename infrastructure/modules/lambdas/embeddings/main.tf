@@ -24,8 +24,9 @@ resource "aws_lambda_function" "embeddings-function" {
 
   environment {
     variables = {
-      ENVIRONMENT         = var.environment
-      PINECONE_SECRET_ARN = var.pinecone_secret_arn
+      ENVIRONMENT                    = var.environment
+      PINECONE_SECRET_ARN            = var.pinecone_secret_arn
+      SEMANTIC_VIDEO_CHAT_TABLE_NAME = var.dynamodb_table_name
     }
   }
 
