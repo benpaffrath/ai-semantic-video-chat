@@ -5,7 +5,7 @@ import {
     QueryCommand,
 } from '@aws-sdk/client-dynamodb'
 import { nanoid } from 'nanoid'
-import { KnowledgeRoom } from '../types'
+import { Conversation, KnowledgeRoom } from '../types'
 
 const client = new DynamoDBClient({
     region: 'eu-central-1',
@@ -41,6 +41,37 @@ export async function insertKnowledgeRoom(
     }
 }
 
+// Function to create a chat conversation in the dynamodb
+export async function insertConversation(
+    title: string,
+    knowledgeRoomId: string,
+    userId: string,
+): Promise<KnowledgeRoom> {
+    const id = nanoid()
+    const createdAt = new Date().toUTCString()
+
+    const params: PutItemCommandInput = {
+        TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
+        Item: {
+            PK: { S: `ROOM#${knowledgeRoomId}` },
+            SK: { S: `CONVERSATION#${id}` },
+            type: { S: 'Conversation' },
+            title: { S: title },
+            userId: { S: userId },
+            createdAt: { S: createdAt },
+        },
+    }
+
+    const command = new PutItemCommand(params)
+    await client.send(command)
+
+    return {
+        id,
+        title,
+        createdAt,
+    }
+}
+
 // Query all knowledge rooms by userId (secondary index)
 export async function listKnowledgeRoomsByUserId(
     userId: string,
@@ -48,9 +79,9 @@ export async function listKnowledgeRoomsByUserId(
     const command = new QueryCommand({
         TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
         IndexName: 'UserIdIndex',
-        KeyConditionExpression: 'userId = :uid',
+        KeyConditionExpression: 'userId = :userId',
         ExpressionAttributeValues: {
-            ':uid': { S: userId },
+            ':userId': { S: userId },
         },
     })
 
@@ -59,6 +90,33 @@ export async function listKnowledgeRoomsByUserId(
     return (
         result?.Items?.map((item) => ({
             id: item.PK.S!.split('#')[1],
+            title: item.title.S!,
+            createdAt: item.createdAt.S!,
+        })) || []
+    )
+}
+
+// Query all knowledge rooms by knowledeRoomId and userId (secondary index)
+export async function listConversationsByKnowledgeRoom(
+    knowledgeRoomId: string,
+    userId: string,
+): Promise<Conversation[]> {
+    const command = new QueryCommand({
+        TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
+        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :skPrefix)',
+        FilterExpression: 'userId = :userId',
+        ExpressionAttributeValues: {
+            ':pk': { S: `ROOM#${knowledgeRoomId}` },
+            ':skPrefix': { S: 'CONVERSATION#' },
+            ':userId': { S: userId },
+        },
+    })
+
+    const result = await client.send(command)
+
+    return (
+        result?.Items?.map((item) => ({
+            id: item.SK.S!.split('#')[1],
             title: item.title.S!,
             createdAt: item.createdAt.S!,
         })) || []
