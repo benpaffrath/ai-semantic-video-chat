@@ -9,8 +9,8 @@ import {
 } from '@/state/jotai'
 import { useAtom } from 'jotai'
 import BasicInputDialog from '../BasicInputDialog/BasicInputDialog'
-import { CREATE_CONVERSATION, CREATE_KNOWLEDGE_ROOM } from '@/graphql/mutations'
-import { LIST_CONVERSATIONS, LIST_KNOWLEDGE_ROOMS } from '@/graphql/queries'
+import { CREATE_CONVERSATION } from '@/graphql/mutations'
+import { LIST_CONVERSATIONS } from '@/graphql/queries'
 import { Conversation } from '@/types'
 import { useApolloClient, useQuery } from '@apollo/client'
 import ContentLoader from 'react-content-loader'
@@ -72,7 +72,12 @@ export default function Conversations() {
                 }
             })
         }
-    }, [currentKnowledgeRoom, refetch, setCurrentConversation])
+    }, [
+        currentKnowledgeRoom,
+        currentConversation,
+        refetch,
+        setCurrentConversation,
+    ])
 
     const handleNewConversationDialog = () => {
         setOpenDialog(!openDialog)
