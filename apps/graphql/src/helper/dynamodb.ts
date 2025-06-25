@@ -80,8 +80,13 @@ export async function listKnowledgeRoomsByUserId(
         TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
         IndexName: 'UserIdIndex',
         KeyConditionExpression: 'userId = :userId',
+        FilterExpression: '#type = :roomType',
+        ExpressionAttributeNames: {
+            '#type': 'type',
+        },
         ExpressionAttributeValues: {
             ':userId': { S: userId },
+            ':roomType': { S: 'KnowledgeRoom' },
         },
     })
 

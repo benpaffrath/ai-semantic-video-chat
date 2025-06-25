@@ -22,6 +22,7 @@ resource "aws_dynamodb_table" "knowledge_table" {
   global_secondary_index {
     name            = "UserIdIndex"
     hash_key        = "userId"
+    range_key       = "PK"
     projection_type = "ALL"
   }
 

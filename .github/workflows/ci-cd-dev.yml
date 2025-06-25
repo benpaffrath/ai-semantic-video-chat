@@ -61,7 +61,7 @@ jobs:
       - name: Get bucket name from .env file
         id: get_bucket
         run: |
-          bucket_name=$(grep -E '^STATIC_HOSTING_BUCKET_NAME\s*=\s*".*"$' ./apps/frontend/.env | cut -d '=' -f 2 | tr -d ' "')
+          bucket_name=$(grep -E '^NEXT_PUBLIC_STATIC_HOSTING_BUCKET_NAME\s*=\s*".*"$' ./apps/frontend/.env | cut -d '=' -f 2 | tr -d ' "')
           echo "Extracted bucket_name: '${bucket_name}'"
           echo "BUCKET_NAME=${bucket_name}" >> $GITHUB_ENV
 
