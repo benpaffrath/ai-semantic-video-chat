@@ -1,8 +1,10 @@
 export enum VideoProgressStatus {
+    INIT = 'INIT',
     UPLOADING = 'UPLOADING',
     TRANSCRIPTION_CREATING = 'TRANSCRIPTION_CREATING',
     EMBEDDINGS_CREATING = 'EMBEDDINGS_CREATING',
     DONE = 'DONE',
+    ERROR = 'ERROR',
 }
 
 export interface KnowledgeRoom {
@@ -20,12 +22,15 @@ export interface Conversation {
 export interface VideoObject {
     id: string
     title: string
-    duration: string
+    duration: number
     status: VideoProgressStatus
     progress?: number
     previewImageKey?: string
-    previewImageUrl: string
+    previewImageUrl?: string
     videoKey?: string
     videoUrl?: string
-    createdAt: string
+    type?: string
+    file?: File
+    uploadUrl?: string
+    createdAt?: string
 }
