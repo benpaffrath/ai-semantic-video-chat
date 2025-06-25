@@ -43,6 +43,21 @@ type Message {
     createdAt: String
 }
 
+type UploadUrl {
+    id: String!
+    key: String!
+    fileName: String!
+    fileType: String!
+    uploadUrl: String!
+}
+
+input CreateUploadUrlInput {
+    id: String!
+    key: String
+    fileName: String!
+    fileType: String!
+}
+
 type Query {
     listKnowledgeRooms: [KnowledgeRoom]
     listConversations(knowledgeRoomId: String!): [Conversation]
@@ -51,4 +66,5 @@ type Query {
 type Mutation {
     createKnowledgeRoom(title: String!): KnowledgeRoom
     createConversation(title: String!, knowledgeRoomId: String!): Conversation
+    createUploadUrls(input: [CreateUploadUrlInput!]!): [UploadUrl]!
 }

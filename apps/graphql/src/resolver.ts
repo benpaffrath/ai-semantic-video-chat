@@ -5,6 +5,7 @@ import {
     listConversationsByKnowledgeRoom,
     listKnowledgeRoomsByUserId,
 } from './helper/dynamodb'
+import { generatePresignedUploadUrl } from './helper/s3'
 
 const clientResolvers = {
     Query: {
@@ -59,6 +60,41 @@ const clientResolvers = {
             } catch (e) {
                 console.error(e)
             }
+        },
+        createUploadUrls: async (_, { input }, context: Context) => {
+            const promises = input.map(
+                (i: {
+                    fileName: string
+                    fileType: string
+                    id: string
+                    key: string
+                }) => ({
+                    promise: generatePresignedUploadUrl(
+                        `${context.userId}/${i.key || i.fileName}`,
+                        i.fileType,
+                        {
+                            createdBy: context.userId,
+                            updatedBy: context.userId,
+                        },
+                    ),
+                    fileName: i.fileName,
+                    fileType: i.fileType,
+                    key: `${i.key || i.fileName}`,
+                    id: i.id,
+                }),
+            )
+
+            const resolvedUploadUrls = await Promise.all(
+                promises.map((p) => p.promise),
+            )
+
+            return resolvedUploadUrls.map((url, index) => ({
+                uploadUrl: url,
+                fileName: promises[index].fileName,
+                fileType: promises[index].fileType,
+                key: promises[index].key,
+                id: promises[index].id,
+            }))
         },
     },
 }

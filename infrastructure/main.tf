@@ -64,17 +64,18 @@ module "chats" {
 }
 
 module "graphql" {
-  source              = "./modules/lambdas/graphql"
-  aws_region          = var.region
-  application_name    = var.application_name
-  environment         = local.environment
-  domain_name         = local.domain_name
-  sqs_output          = module.sqs.sqs_transcription_queue_arn
-  dynamodb_table_arn  = module.database.dynamodb_table_arn
-  dynamodb_table_name = module.database.dynamodb_table_name
-  s3_video_bucket_arn = module.storage.s3_video_bucket_arn
-  chats_lambda_arn    = module.chats.chats_lambda_arn
-  tags                = local.tags
+  source               = "./modules/lambdas/graphql"
+  aws_region           = var.region
+  application_name     = var.application_name
+  environment          = local.environment
+  domain_name          = local.domain_name
+  sqs_output           = module.sqs.sqs_transcription_queue_arn
+  dynamodb_table_arn   = module.database.dynamodb_table_arn
+  dynamodb_table_name  = module.database.dynamodb_table_name
+  s3_video_bucket_arn  = module.storage.s3_video_bucket_arn
+  s3_video_bucket_name = module.storage.s3_video_bucket_name
+  chats_lambda_arn     = module.chats.chats_lambda_arn
+  tags                 = local.tags
 }
 
 module "layers" {

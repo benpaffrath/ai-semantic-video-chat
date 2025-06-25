@@ -43,6 +43,11 @@ variable "s3_video_bucket_arn" {
   default     = ""
 }
 
+variable "s3_video_bucket_name" {
+  description = "Name for the s3 storage bucket"
+  default     = ""
+}
+
 variable "chats_lambda_arn" {
   description = "Arn for the chat lambda to invoke"
   default     = ""
