@@ -10,6 +10,8 @@ export function generateUserToken() {
 
 // Get user token from local storage
 export function getUserToken() {
+    if (typeof window === 'undefined') return ''
+
     let token = localStorage.getItem('userToken')
 
     if (!token) {

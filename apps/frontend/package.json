@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@tabler/icons-react": "^3.34.0",
     "jotai": "^2.12.5",
     "next": "15.3.4",
     "react": "^19.0.0",
+    "react-content-loader": "^7.0.2",
     "react-dom": "^19.0.0",
     "uuid": "^11.1.0"
   },
