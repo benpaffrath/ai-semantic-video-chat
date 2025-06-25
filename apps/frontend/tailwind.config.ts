@@ -11,6 +11,10 @@ const config: Config = {
             colors: {
                 primary: 'var(--primary)',
                 paper: 'var(--paper)',
+                info: 'var(--info)',
+                warning: 'var(--warning)',
+                error: 'var(--error)',
+                success: 'var(--success)',
             },
         },
     },
