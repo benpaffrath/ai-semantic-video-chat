@@ -19,3 +19,12 @@ export const CREATE_CONVERSATION = gql`
         }
     }
 `
+
+export const CREATE_UPLOAD_URLS = gql`
+    mutation createUploadUrls($input: [CreateUploadUrlInput!]!) {
+        createUploadUrls(input: $input) {
+            id
+            uploadUrl
+        }
+    }
+`

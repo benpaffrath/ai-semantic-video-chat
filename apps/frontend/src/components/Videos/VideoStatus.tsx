@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 interface VideoStatusProps {
     status: VideoProgressStatus
     progress?: number
-    createdAt: string
+    createdAt?: string
 }
 
 export default function VideoStatus({
@@ -23,6 +23,10 @@ export default function VideoStatus({
             let t = ''
 
             switch (status) {
+                case VideoProgressStatus.INIT:
+                    c = 'warning'
+                    t = 'Processing...'
+                    break
                 case VideoProgressStatus.UPLOADING:
                     c = 'warning'
                     t = 'Uploading'
@@ -37,7 +41,7 @@ export default function VideoStatus({
                     break
                 case VideoProgressStatus.DONE:
                     c = 'success'
-                    t = format(createdAt, 'dd.MM.yyyy')
+                    t = createdAt ? format(createdAt, 'dd.MM.yyyy') : ''
                     break
             }
 
