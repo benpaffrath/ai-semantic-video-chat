@@ -12,6 +12,7 @@
     "@apollo/client": "^3.13.8",
     "@next/env": "^15.3.4",
     "@tabler/icons-react": "^3.34.0",
+    "date-fns": "^4.1.0",
     "jotai": "^2.12.5",
     "next": "15.3.4",
     "react": "^19.0.0",
