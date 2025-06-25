@@ -117,12 +117,14 @@ export default function Conversations() {
         setSubmitLoading(false)
     }
 
+    if (!currentKnowledgeRoom?.id) {
+        return null
+    }
+
     return (
         <div className="flex flex-col gap-1 px-4">
-            <div className="px-4 mb-2 text-white/60 text-sm">
-                Knowledge Rooms
-            </div>
-            <div className="flex flex-col gap-1 max-h-[152px] overflow-x-auto">
+            <div className="px-4 mb-2 text-white/60 text-sm">Conversations</div>
+            <div className="flex flex-col gap-1 max-h-[152px]  overflow-x-auto">
                 {loading && (
                     <ContentLoader
                         uniqueKey="c"
@@ -185,6 +187,15 @@ export default function Conversations() {
                         />
                     </ContentLoader>
                 )}
+                {!loading && !conversations?.length && (
+                    <div className="px-4 ">
+                        Create a Conversation!
+                        <br />
+                        <br />
+                        Within a conversation, you can ask questions about the
+                        content of your Knowledge Room.
+                    </div>
+                )}
                 {conversations.map((conversation) => (
                     <div
                         onClick={() => handleConversationChange(conversation)}
@@ -196,7 +207,7 @@ export default function Conversations() {
                     </div>
                 ))}
             </div>
-            {!loading && (
+            {!loading && currentKnowledgeRoom?.id && (
                 <PrimaryButton
                     text="New Conversation"
                     icon={<IconPlus size={21} />}

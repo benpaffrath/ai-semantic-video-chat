@@ -75,7 +75,7 @@ export default function KnowledgeRooms() {
             <div className="px-4 mb-2 text-white/60 text-sm">
                 Knowledge Rooms
             </div>
-            <div className="flex flex-col gap-1 max-h-[152px] overflow-x-auto">
+            <div className="flex flex-col gap-1 max-h-[152px] min-h-[152px] overflow-x-auto">
                 {loading && (
                     <ContentLoader
                         uniqueKey="c"
@@ -137,6 +137,15 @@ export default function KnowledgeRooms() {
                             height="17"
                         />
                     </ContentLoader>
+                )}
+                {!loading && !rooms?.length && (
+                    <div className="px-4 ">
+                        Create a Knowledge Room!
+                        <br />
+                        <br />
+                        With a Knowledge Room you can bundle knowledge on a
+                        specific topic and chat only on that information.
+                    </div>
                 )}
                 {rooms.map((room) => (
                     <div
