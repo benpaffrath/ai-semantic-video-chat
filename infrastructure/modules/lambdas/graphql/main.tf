@@ -82,7 +82,10 @@ resource "aws_iam_role_policy" "function_policy" {
           "dynamodb:Query",
           "dynamodb:Scan"
         ],
-        Resource : var.dynamodb_table_arn
+        Resource : [
+          var.dynamodb_table_arn,
+          "${var.dynamodb_table_arn}/index/*"
+        ]
       },
       {
         Effect : "Allow",
