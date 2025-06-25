@@ -25,8 +25,7 @@ export interface VideoObject {
     duration: number
     status: VideoProgressStatus
     progress?: number
-    previewImageKey?: string
-    previewImageUrl?: string
+    previewImage?: string
     videoKey?: string
     videoUrl?: string
     type?: string

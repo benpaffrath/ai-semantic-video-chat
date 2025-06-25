@@ -2,10 +2,12 @@ import { Context } from './context'
 import {
     insertConversation,
     insertKnowledgeRoom,
+    insertVideo,
     listConversationsByKnowledgeRoom,
     listKnowledgeRoomsByUserId,
 } from './helper/dynamodb'
 import { generatePresignedUploadUrl } from './helper/s3'
+import { sendVideoEventToSQS } from './helper/sqs'
 
 const clientResolvers = {
     Query: {
@@ -95,6 +97,32 @@ const clientResolvers = {
                 key: promises[index].key,
                 id: promises[index].id,
             }))
+        },
+        createVideo: async (_, { input, knowledeRoomId }, context: Context) => {
+            try {
+                const video = await insertVideo(
+                    input.id,
+                    input.title,
+                    input.duration,
+                    input.previewImage,
+                    input.videoKey,
+                    input.type,
+                    knowledeRoomId,
+                    context.userId,
+                )
+
+                const messageId = await sendVideoEventToSQS(
+                    video,
+                    knowledeRoomId,
+                    context.userId,
+                )
+
+                console.log('Message ID', messageId)
+
+                return video
+            } catch (e) {
+                console.error(e)
+            }
         },
     },
 }

@@ -25,7 +25,7 @@ export default function Video({ video }: VideoProps) {
             className="flex gap-4 bg-background hover:bg-black/60 p-4 rounded-lg w-full h-[92px] overflow-hidden cursor-pointer"
         >
             <div
-                style={{ backgroundImage: `url('${video.previewImageUrl}')` }}
+                style={{ backgroundImage: `url('${video.previewImage}')` }}
                 className="bg-cover bg-center bg-white h-full aspect-video rounded-md relative"
             >
                 {video.status !== VideoProgressStatus.DONE && (
