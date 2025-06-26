@@ -20,15 +20,17 @@ resource "aws_lambda_function" "transcription-function" {
 
   role = aws_iam_role.function_role.arn
 
-  layers = [var.ffmpeg_layer_arn]
+  layers = [var.ffmpeg_layer_arn, var.langchain_layer_arn]
 
   memory_size = local.function_memory_size
 
   environment {
     variables = {
-      ENVIRONMENT              = var.environment
-      EMBEDDINGS_SQS_QUEUE_ARN = var.sqs_output
+      ENVIRONMENT                    = var.environment
+      EMBEDDINGS_SQS_QUEUE_URL       = var.sqs_output_url
       SEMANTIC_VIDEO_CHAT_TABLE_NAME = var.dynamodb_table_name
+      S3_VIDEO_BUCKET_NAME           = var.s3_video_bucket_name
+      OPENAI_SECRET_ARN              = var.openai_secret_arn
     }
   }
 

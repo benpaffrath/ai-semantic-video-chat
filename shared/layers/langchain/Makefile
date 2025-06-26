@@ -1,14 +1,22 @@
-LAMBDA_PACKAGE_DIR=package
+LAMBDA_PACKAGE_DIR=python
 LAMBDA_DIST_DIR=dist
 LAMBDA_ZIP=$(LAMBDA_DIST_DIR)/layer.zip
+PYTHON_VERSION=3.11
+DOCKER_IMAGE=python:$(PYTHON_VERSION)-slim
 
-.PHONY: install package clean
+.PHONY: install docker-install package clean
 
 install:
-	pip install -r requirements.txt --target $(LAMBDA_PACKAGE_DIR)
+	mkdir -p $(LAMBDA_PACKAGE_DIR)/lib/python$(PYTHON_VERSION)/site-packages
+	pip install -r requirements.txt -t $(LAMBDA_PACKAGE_DIR)/lib/python$(PYTHON_VERSION)/site-packages
 
-package: clean install | $(LAMBDA_DIST_DIR)
-	cd $(LAMBDA_PACKAGE_DIR) && zip -r ../$(LAMBDA_ZIP) .
+docker-install:
+	docker run --rm --platform linux/amd64 -v $(shell pwd):/var/task -w /var/task $(DOCKER_IMAGE) bash -c "\
+		mkdir -p $(LAMBDA_PACKAGE_DIR)/lib/python$(PYTHON_VERSION)/site-packages && \
+		pip install -r requirements.txt -t $(LAMBDA_PACKAGE_DIR)/lib/python$(PYTHON_VERSION)/site-packages"
+
+package: $(LAMBDA_DIST_DIR)
+	zip -r $(LAMBDA_ZIP) $(LAMBDA_PACKAGE_DIR)
 
 clean:
 	rm -rf $(LAMBDA_PACKAGE_DIR) $(LAMBDA_DIST_DIR)

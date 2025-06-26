@@ -27,12 +27,15 @@ module "transcription" {
   domain_name          = local.domain_name
   sqs_trigger          = module.sqs.sqs_transcription_queue_arn
   sqs_output           = module.sqs.sqs_embeddings_queue_arn
+  sqs_output_url       = module.sqs.sqs_embeddings_queue_url
   dynamodb_table_arn   = module.database.dynamodb_table_arn
   dynamodb_table_name  = module.database.dynamodb_table_name
   openai_secret_arn    = module.secrets.openai_secret_arn
   langsmith_secret_arn = module.secrets.langsmith_secret_arn
   s3_video_bucket_arn  = module.storage.s3_video_bucket_arn
+  s3_video_bucket_name = module.storage.s3_video_bucket_name
   ffmpeg_layer_arn     = module.layers.ffmpeg_layer_arn
+  langchain_layer_arn  = module.layers.langchain_layer_arn
   tags                 = local.tags
 }
 

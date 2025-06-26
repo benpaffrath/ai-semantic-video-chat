@@ -4,12 +4,12 @@ const sqsClient = new SQSClient({ region: 'eu-central-1' })
 
 export async function sendVideoEventToSQS(
     event: object,
-    knowledeRoomId: string,
+    knowledgeRoomId: string,
     userId: string,
 ) {
     const queueUrl = process.env.TRANSCRIPTIONS_SQS_QUEUE_URL!
 
-    const messageBody = JSON.stringify({ ...event, knowledeRoomId, userId })
+    const messageBody = JSON.stringify({ ...event, knowledgeRoomId, userId })
 
     const params = {
         QueueUrl: queueUrl,

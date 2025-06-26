@@ -1,2 +1,4 @@
-langchain==0.3.25
-langchain-openai==0.3.24
+langchain-core
+pydantic
+jiter
+openai

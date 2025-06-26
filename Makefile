@@ -76,6 +76,9 @@ clean-chats:
 install-langchain-layer:
 	$(MAKE) -C $(LANGCHAIN_LAYER_DIR) install
 
+docker-install-langchain-layer:
+	$(MAKE) -C $(LANGCHAIN_LAYER_DIR) docker-install
+
 package-langchain-layer:
 	$(MAKE) -C $(LANGCHAIN_LAYER_DIR) package
 
@@ -94,7 +97,7 @@ clean-ffmpeg-layer:
 
 clean: clean-frontend clean-graphql clean-transcription clean-embeddings clean-chats clean-langchain-layer clean-ffmpeg-layer
 
-install: install-frontend install-graphql install-transcription install-embeddings install-chats install-langchain-layer
+install: install-frontend install-graphql install-transcription install-embeddings install-chats docker-install-langchain-layer
 
 lint: lint-frontend
 
