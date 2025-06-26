@@ -5,6 +5,7 @@ import {
     insertVideo,
     listConversationsByKnowledgeRoom,
     listKnowledgeRoomsByUserId,
+    listVideosByKnowledgeRoom,
 } from './helper/dynamodb'
 import { generatePresignedUploadUrl } from './helper/s3'
 import { sendVideoEventToSQS } from './helper/sqs'
@@ -25,6 +26,20 @@ const clientResolvers = {
         ) => {
             try {
                 return await listConversationsByKnowledgeRoom(
+                    knowledgeRoomId,
+                    context.userId,
+                )
+            } catch (e) {
+                console.error(e)
+            }
+        },
+        listVideos: async (
+            _,
+            { knowledgeRoomId }: { knowledgeRoomId: string },
+            context: Context,
+        ) => {
+            try {
+                return await listVideosByKnowledgeRoom(
                     knowledgeRoomId,
                     context.userId,
                 )
@@ -98,7 +113,11 @@ const clientResolvers = {
                 id: promises[index].id,
             }))
         },
-        createVideo: async (_, { input, knowledeRoomId }, context: Context) => {
+        createVideo: async (
+            _,
+            { input, knowledgeRoomId },
+            context: Context,
+        ) => {
             try {
                 const video = await insertVideo(
                     input.id,
@@ -107,13 +126,13 @@ const clientResolvers = {
                     input.previewImage,
                     input.videoKey,
                     input.type,
-                    knowledeRoomId,
+                    knowledgeRoomId,
                     context.userId,
                 )
 
                 const messageId = await sendVideoEventToSQS(
                     video,
-                    knowledeRoomId,
+                    knowledgeRoomId,
                     context.userId,
                 )
 
