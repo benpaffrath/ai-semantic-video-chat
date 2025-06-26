@@ -72,6 +72,7 @@ input CreateVideoInput {
 type Query {
     listKnowledgeRooms: [KnowledgeRoom]
     listConversations(knowledgeRoomId: String!): [Conversation]
+    listVideos(knowledgeRoomId: String!): [Video]
 }
 
 type Mutation {

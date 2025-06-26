@@ -9,3 +9,15 @@ export interface Conversation {
     title: string
     createdAt: string
 }
+
+export interface Video {
+    id: string
+    title: string
+    videoKey: string
+    videoUrl: string
+    duration: number
+    previewImage: string
+    type: string
+    status: string
+    createdAt: string
+}

@@ -5,8 +5,9 @@ import {
     insertVideo,
     listConversationsByKnowledgeRoom,
     listKnowledgeRoomsByUserId,
+    listVideosByKnowledgeRoom,
 } from './helper/dynamodb'
-import { generatePresignedUploadUrl } from './helper/s3'
+import { generatePresignedUploadUrl, generatePresignedUrl } from './helper/s3'
 import { sendVideoEventToSQS } from './helper/sqs'
 
 const clientResolvers = {
@@ -27,6 +28,32 @@ const clientResolvers = {
                 return await listConversationsByKnowledgeRoom(
                     knowledgeRoomId,
                     context.userId,
+                )
+            } catch (e) {
+                console.error(e)
+            }
+        },
+        listVideos: async (
+            _,
+            { knowledgeRoomId }: { knowledgeRoomId: string },
+            context: Context,
+        ) => {
+            try {
+                const videos = await listVideosByKnowledgeRoom(
+                    knowledgeRoomId,
+                    context.userId,
+                )
+
+                return await Promise.all(
+                    videos.map(async (video) => {
+                        const videoUrl = await generatePresignedUrl(
+                            `${context.userId}/${video.videoKey}`,
+                        )
+                        return {
+                            ...video,
+                            videoUrl,
+                        }
+                    }),
                 )
             } catch (e) {
                 console.error(e)
@@ -98,7 +125,11 @@ const clientResolvers = {
                 id: promises[index].id,
             }))
         },
-        createVideo: async (_, { input, knowledeRoomId }, context: Context) => {
+        createVideo: async (
+            _,
+            { input, knowledgeRoomId },
+            context: Context,
+        ) => {
             try {
                 const video = await insertVideo(
                     input.id,
@@ -107,13 +138,13 @@ const clientResolvers = {
                     input.previewImage,
                     input.videoKey,
                     input.type,
-                    knowledeRoomId,
+                    knowledgeRoomId,
                     context.userId,
                 )
 
                 const messageId = await sendVideoEventToSQS(
                     video,
-                    knowledeRoomId,
+                    knowledgeRoomId,
                     context.userId,
                 )
 

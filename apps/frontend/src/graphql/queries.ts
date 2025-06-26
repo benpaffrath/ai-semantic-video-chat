@@ -19,3 +19,19 @@ export const LIST_CONVERSATIONS = gql`
         }
     }
 `
+
+export const LIST_VIDEOS = gql`
+    query listVideos($knowledgeRoomId: String!) {
+        listVideos(knowledgeRoomId: $knowledgeRoomId) {
+            id
+            title
+            duration
+            previewImage
+            status
+            videoKey
+            videoUrl
+            type
+            createdAt
+        }
+    }
+`

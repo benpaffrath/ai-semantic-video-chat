@@ -5,7 +5,7 @@ import {
     QueryCommand,
 } from '@aws-sdk/client-dynamodb'
 import { nanoid } from 'nanoid'
-import { Conversation, KnowledgeRoom } from '../types'
+import { Conversation, KnowledgeRoom, Video } from '../types'
 
 const client = new DynamoDBClient({
     region: 'eu-central-1',
@@ -172,6 +172,38 @@ export async function listConversationsByKnowledgeRoom(
         result?.Items?.map((item) => ({
             id: item.SK.S!.split('#')[1],
             title: item.title.S!,
+            createdAt: item.createdAt.S!,
+        })) || []
+    )
+}
+
+export async function listVideosByKnowledgeRoom(
+    knowledgeRoomId: string,
+    userId: string,
+): Promise<Video[]> {
+    const command = new QueryCommand({
+        TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
+        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :skPrefix)',
+        FilterExpression: 'userId = :userId',
+        ExpressionAttributeValues: {
+            ':pk': { S: `ROOM#${knowledgeRoomId}` },
+            ':skPrefix': { S: 'VIDEO#' },
+            ':userId': { S: userId },
+        },
+    })
+
+    const result = await client.send(command)
+
+    return (
+        result?.Items?.map((item) => ({
+            id: item.SK.S!.split('#')[1],
+            title: item.title.S!,
+            duration: parseFloat(item.metadata?.M?.duration.N || '0'),
+            previewImage: item.metadata?.M?.previewImage?.S || '',
+            status: item.metadata?.M?.status?.S || '',
+            videoKey: item.metadata?.M?.videoKey?.S || '',
+            type: item.metadata?.M?.type?.S || '',
+            videoUrl: '',
             createdAt: item.createdAt.S!,
         })) || []
     )
