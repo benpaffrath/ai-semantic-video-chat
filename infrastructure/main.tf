@@ -70,6 +70,7 @@ module "graphql" {
   environment          = local.environment
   domain_name          = local.domain_name
   sqs_output           = module.sqs.sqs_transcription_queue_arn
+  sqs_output_url       = module.sqs.sqs_transcription_queue_url
   dynamodb_table_arn   = module.database.dynamodb_table_arn
   dynamodb_table_name  = module.database.dynamodb_table_name
   s3_video_bucket_arn  = module.storage.s3_video_bucket_arn

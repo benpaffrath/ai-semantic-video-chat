@@ -28,6 +28,11 @@ variable "sqs_output" {
   default     = ""
 }
 
+variable "sqs_output_url" {
+  description = "The SQS arn to send events to"
+  default     = ""
+}
+
 variable "dynamodb_table_arn" {
   description = "The ARN of the DynamoDB"
   default     = ""

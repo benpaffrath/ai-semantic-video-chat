@@ -72,6 +72,55 @@ export async function insertConversation(
     }
 }
 
+export async function insertVideo(
+    id: string,
+    title: string,
+    duration: number,
+    previewImage: string,
+    videoKey: string,
+    type: string,
+    knowledgeRoomId: string,
+    userId: string,
+) {
+    const createdAt = new Date().toUTCString()
+    const status = 'TRANSCRIPTION_CREATING'
+
+    const params: PutItemCommandInput = {
+        TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
+        Item: {
+            PK: { S: `ROOM#${knowledgeRoomId}` },
+            SK: { S: `VIDEO#${id}` },
+            type: { S: 'Video' },
+            title: { S: title },
+            metadata: {
+                M: {
+                    duration: { N: duration.toString() },
+                    previewImage: { S: previewImage },
+                    videoKey: { S: videoKey },
+                    type: { S: type },
+                    status: { S: status },
+                },
+            },
+            userId: { S: userId },
+            createdAt: { S: createdAt },
+        },
+    }
+
+    const command = new PutItemCommand(params)
+    await client.send(command)
+
+    return {
+        id,
+        title,
+        duration,
+        previewImage,
+        videoKey,
+        type,
+        status,
+        createdAt,
+    }
+}
+
 // Query all knowledge rooms by userId (secondary index)
 export async function listKnowledgeRoomsByUserId(
     userId: string,

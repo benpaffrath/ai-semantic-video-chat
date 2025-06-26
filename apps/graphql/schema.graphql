@@ -25,16 +25,6 @@ type Conversation {
     createdAt: String
 }
 
-type Video {
-    id: String!
-    title: String!
-    key: String!
-    duration: Int
-    type: String
-    status: VideoStatus
-    createdAt: String
-}
-
 type Message {
     id: String!
     fromUser: Boolean!
@@ -51,11 +41,32 @@ type UploadUrl {
     uploadUrl: String!
 }
 
+type Video {
+    id: String!
+    title: String!
+    videoKey: String
+    videoUrl: String
+    duration: Float
+    previewImage: String
+    type: String
+    status: String
+    createdAt: String
+}
+
 input CreateUploadUrlInput {
     id: String!
     key: String
     fileName: String!
     fileType: String!
+}
+
+input CreateVideoInput {
+    id: String!
+    title: String!
+    duration: Float!
+    previewImage: String!
+    videoKey: String!
+    type: String!
 }
 
 type Query {
@@ -67,4 +78,5 @@ type Mutation {
     createKnowledgeRoom(title: String!): KnowledgeRoom
     createConversation(title: String!, knowledgeRoomId: String!): Conversation
     createUploadUrls(input: [CreateUploadUrlInput!]!): [UploadUrl]!
+    createVideo(input: CreateVideoInput!, knowledgeRoomId: String!): Video
 }

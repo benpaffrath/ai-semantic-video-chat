@@ -1,13 +1,13 @@
 'use client'
 
-import { CREATE_UPLOAD_URLS } from '@/graphql/mutations'
+import { CREATE_UPLOAD_URLS, CREATE_VIDEO } from '@/graphql/mutations'
 import {
     ACCEPTED_VIDEO_MAX,
     ACCEPTED_VIDEO_SIZE,
     uploadFileToS3,
 } from '@/helper/fileUpload'
 import { generateVideoPreviewImage, getVideoDuration } from '@/helper/videos'
-import { currentVideosAtom } from '@/state/jotai'
+import { currentKnowledgeRoomAtom, currentVideosAtom } from '@/state/jotai'
 import { VideoObject, VideoProgressStatus } from '@/types'
 import { useApolloClient } from '@apollo/client'
 import { IconFilePlus } from '@tabler/icons-react'
@@ -19,6 +19,7 @@ import { useDropzone } from 'react-dropzone'
 export default function FileUploadDropzone() {
     const client = useApolloClient()
     const [, setCurrentVideos] = useAtom(currentVideosAtom)
+    const [currentKnowledgeRoom] = useAtom(currentKnowledgeRoomAtom)
 
     const [isDragOver, setIsDragOver] = useState<boolean>(false)
 
@@ -34,12 +35,13 @@ export default function FileUploadDropzone() {
         for (const file of files) {
             try {
                 const duration = await getVideoDuration(file)
-                const thumbnail = await generateVideoPreviewImage(file)
+                const previewImage = await generateVideoPreviewImage(file)
+
                 const videoObject: VideoObject = {
                     id: nanoid(),
                     title: file.name,
                     duration,
-                    previewImageUrl: thumbnail,
+                    previewImage,
                     progress: 0,
                     status: VideoProgressStatus.INIT,
                     uploadUrl: '',
@@ -117,7 +119,7 @@ export default function FileUploadDropzone() {
                     file.file!,
                     file.uploadUrl,
                     (progress) => updateProgress(file.id, progress),
-                    () => handleUploadSuccess(file.id),
+                    () => handleUploadSuccess(file),
                     () => handleUploadError(file.id),
                 ),
             ),
@@ -132,16 +134,24 @@ export default function FileUploadDropzone() {
         )
     }
 
-    const handleUploadSuccess = async (id: string) => {
+    const handleUploadSuccess = async (file: VideoObject) => {
+        const res = await client.mutate({
+            mutation: CREATE_VIDEO,
+            variables: {
+                input: {
+                    id: file.id,
+                    title: file.title,
+                    duration: file.duration,
+                    previewImage: file.previewImage,
+                    videoKey: file.title,
+                    type: file.type,
+                },
+                knowledgeRoomId: currentKnowledgeRoom?.id,
+            },
+        })
+
         setCurrentVideos((prev) =>
-            prev?.map((file) =>
-                file.id === id
-                    ? {
-                          ...file,
-                          status: VideoProgressStatus.TRANSCRIPTION_CREATING,
-                      }
-                    : file,
-            ),
+            prev?.map((f) => (f.id === file.id ? res?.data?.createVideo : f)),
         )
     }
 

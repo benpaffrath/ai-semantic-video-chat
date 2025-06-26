@@ -28,3 +28,19 @@ export const CREATE_UPLOAD_URLS = gql`
         }
     }
 `
+
+export const CREATE_VIDEO = gql`
+    mutation createVideo($input: CreateVideoInput!, $knowledgeRoomId: String!) {
+        createVideo(input: $input, knowledgeRoomId: $knowledgeRoomId) {
+            id
+            title
+            videoKey
+            videoUrl
+            duration
+            previewImage
+            type
+            status
+            createdAt
+        }
+    }
+`
