@@ -7,7 +7,7 @@ import {
     listKnowledgeRoomsByUserId,
     listVideosByKnowledgeRoom,
 } from './helper/dynamodb'
-import { generatePresignedUploadUrl } from './helper/s3'
+import { generatePresignedUploadUrl, generatePresignedUrl } from './helper/s3'
 import { sendVideoEventToSQS } from './helper/sqs'
 
 const clientResolvers = {
@@ -39,9 +39,21 @@ const clientResolvers = {
             context: Context,
         ) => {
             try {
-                return await listVideosByKnowledgeRoom(
+                const videos = await listVideosByKnowledgeRoom(
                     knowledgeRoomId,
                     context.userId,
+                )
+
+                return await Promise.all(
+                    videos.map(async (video) => {
+                        const videoUrl = await generatePresignedUrl(
+                            `${context.userId}/${video.videoKey}`,
+                        )
+                        return {
+                            ...video,
+                            videoUrl,
+                        }
+                    }),
                 )
             } catch (e) {
                 console.error(e)
