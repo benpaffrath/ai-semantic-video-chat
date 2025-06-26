@@ -33,6 +33,11 @@ variable "sqs_output" {
   default     = ""
 }
 
+variable "sqs_output_url" {
+  description = "The SQS url to send events to"
+  default     = ""
+}
+
 variable "dynamodb_table_arn" {
   description = "The ARN of the DynamoDB"
   default     = ""
@@ -58,7 +63,17 @@ variable "s3_video_bucket_arn" {
   default     = ""
 }
 
+variable "s3_video_bucket_name" {
+  description = "Name for the s3 storage bucket"
+  default     = ""
+}
+
 variable "ffmpeg_layer_arn" {
   description = "ffmpeg layer arn"
+  default     = ""
+}
+
+variable "langchain_layer_arn" {
+  description = "LangChain layer arn"
   default     = ""
 }
