@@ -27,6 +27,7 @@ resource "aws_lambda_function" "chats-function" {
       ENVIRONMENT         = var.environment
       OPENAI_SECRET_ARN   = var.openai_secret_arn
       PINECONE_SECRET_ARN = var.pinecone_secret_arn
+      PINECONE_INDEX_NAME = var.pinecone_index_name
     }
   }
 

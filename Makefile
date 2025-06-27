@@ -54,6 +54,9 @@ clean-transcription:
 install-embeddings:
 	$(MAKE) -C $(EMBEDDINGS_DIR) install
 
+docker-install-embeddings:
+	$(MAKE) -C $(EMBEDDINGS_DIR) docker-install	
+
 package-embeddings:
 	$(MAKE) -C $(EMBEDDINGS_DIR) package
 
@@ -97,7 +100,7 @@ clean-ffmpeg-layer:
 
 clean: clean-frontend clean-graphql clean-transcription clean-embeddings clean-chats clean-langchain-layer clean-ffmpeg-layer
 
-install: install-frontend install-graphql install-transcription install-embeddings install-chats docker-install-langchain-layer
+install: install-frontend install-graphql install-transcription docker-install-embeddings install-chats docker-install-langchain-layer
 
 lint: lint-frontend
 

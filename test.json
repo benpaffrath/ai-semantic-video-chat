@@ -1,0 +1,170 @@
+{
+    "Records": [
+        {
+            "messageId": "6b3ae93e-3040-4cd0-959d-2c8c5220f1f0",
+            "receiptHandle": "AQEBms3xW+JyU5j2wppbsJ6N4oCHeD5Mk7FIuK2l8hvybexAbsNkhGAksf9LR9bzzB3LvkjTIuIFCB+pyewInnsNjVlxUf2aOb14HyL0KG9LJuCLW0m3G0uhKBufVz9byca17Ijk+I+mF4o3t9I/Gg3NBBVyN/khQT1hdmsiCO4b16j/m4q8jPMP9WDidobsPNph+9VGpmM8//JTe3+gH80iQWBHrfX/ecuegPRveTqgfS9xISS68Qqnt5de7+SA/Truwu7b+Q/+bI7svuJjRPladvBtJIDmMipK+8BqvURpyjzhy1W3zbkFb7zcf0pw/bqviU1kZG+hni5kieD3rkWvpPM65GFmmrkFrTcC6f/ogM3V+awyTw3j71OJdnOjWdqv7w6WD9fFuAZDK6OooiK7b0HIr8qTDpYuefdIJYhC/LPC6KeHlZr5vSShnRC0km2z",
+            "body": "{"userId": "88988307-497b-4715-aa32-758441303015", "videoId": "Q_glNksp1KI6lMxBVCoe-", "videoKey": "video.webm", "knowledgeRoomId": "MfMA_oTKuNju8_c5habLy", "transcript": {"text": "Welcome to GermanPod101.com\"s Deutsch in drei Minuten, the fastest, easiest, and most fun way to learn German. Hallo, ich hei\\u00dfe Laura. Sehr erfreut. Hi, I\"m Laura. Nice to meet you. In this series, we\"re going to learn basic German expressions. It\"s super easy, and it only takes three minutes. In this lesson, we are going to learn how to introduce ourselves in German. We\"ll start speaking right away, but first, it\"s important to clarify that in German, there is a difference between the formal and the informal language. Let\"s first see how German people introduce themselves in an informal situation. Hallo, ich hei\\u00dfe Laura. Sch\\u00f6n, dich kennenzulernen. Hi, I\"m Laura. Nice to meet you. Hallo, ich hei\\u00dfe Laura. Sch\\u00f6n, dich kennenzulernen. Start by saying Hallo, ich hei\\u00dfe, then say your name. Hallo, ich hei\\u00dfe Laura. Finally say Sch\\u00f6n, dich kennenzulernen. Hallo, ich hei\\u00dfe Laura. Sch\\u00f6n, dich kennenzulernen. And now, let\"s see the same sentence in formal speech. Guten Tag, ich hei\\u00dfe Laura Maier. Sch\\u00f6n, sie kennenzulernen. Good day, I\"m Laura Maier. Nice to meet you. Guten Tag, ich hei\\u00dfe Laura Maier. Sch\\u00f6n, sie kennenzulernen. So what has changed from the previous introduction? Let\"s take a close look at these expressions together. Hallo has been substituted with the formal greeting Guten Tag, German for good day. Ich hei\\u00dfe Laura has not been changed. Ich hei\\u00dfe simply means I am. However, during a formal self-introduction, we also say our last name. So I said Laura Maier. Here, you would say your full name. Finally, pay attention to the ending. We went from dich kennenzulernen to sie kennenzulernen. What is changing is the German word for you. In a formal sentence, we use the more polite word sie. One more time. The informal way to introduce yourself in German is Hallo, ich hei\\u00dfe Laura. Sch\\u00f6n, dich kennenzulernen. The formal way to introduce yourself is Guten Tag, ich hei\\u00dfe Laura Maier. Sch\\u00f6n, sie kennenzulernen. Now it\"s time for Laura\"s insights. When you introduce yourself, it\"s a good habit to shake hands. If you\"re not sure whether to use sch\\u00f6n, dich kennenzulernen or sch\\u00f6n, sie kennenzulernen, just say simply sehr erfreut, as I said at the beginning of this lesson. If you use the correct sentence with German people, they\"re definitely going to be impressed. That\"s it for this lesson. Do you know how we say thank you in German? We\"ll learn how to say this and many other words in the next lesson. Bis bald zur n\\u00e4chsten Lektion. See you then!",
+            "segments": [
+                {
+                    "start": 0.0,
+                    "end": 15.079999923706055,
+                    "text": "Welcome to GermanPod101.com\"s Deutsch in drei Minuten, the fastest, easiest, and most"
+                },
+                {
+                    "start": 15.079999923706055,
+                    "end": 20.959999084472656,
+                    "text": "fun way to learn German. Hallo, ich hei\\u00dfe Laura. Sehr erfreut. Hi,"
+                },
+                {
+                    "start": 20.959999084472656,
+                    "end": 25.440000534057617,
+                    "text": "I\"m Laura. Nice to meet you. In this series, we\"re going to learn basic"
+                },
+                {
+                    "start": 25.440000534057617,
+                    "end": 32.20000076293945,
+                    "text": "German expressions. It\"s super easy, and it only takes three minutes. In this lesson,"
+                },
+                {
+                    "start": 32.20000076293945,
+                    "end": 37.720001220703125,
+                    "text": "we are going to learn how to introduce ourselves in German. We\"ll start speaking right away,"
+                },
+                {
+                    "start": 37.720001220703125,
+                    "end": 42.720001220703125,
+                    "text": "but first, it\"s important to clarify that in German, there is a difference between the"
+                },
+                {
+                    "start": 42.720001220703125,
+                    "end": 48.720001220703125,
+                    "text": "formal and the informal language. Let\"s first see how German people introduce"
+                },
+                {
+                    "start": 48.720001220703125,
+                    "end": 55.720001220703125,
+                    "text": "themselves in an informal situation. Hallo, ich hei\\u00dfe Laura. Sch\\u00f6n, dich kennenzulernen."
+                },
+                {
+                    "start": 55.720001220703125,
+                    "end": 66.23999786376953,
+                    "text": "Hi, I\"m Laura. Nice to meet you. Hallo, ich hei\\u00dfe Laura. Sch\\u00f6n, dich kennenzulernen."
+                },
+                {
+                    "start": 66.23999786376953,
+                    "end": 70.4800033569336,
+                    "text": "Start by saying Hallo, ich hei\\u00dfe, then say your name."
+                },
+                {
+                    "start": 70.4800033569336,
+                    "end": 76.0,
+                    "text": "Hallo, ich hei\\u00dfe Laura. Finally say Sch\\u00f6n, dich kennenzulernen."
+                },
+                {
+                    "start": 76.0,
+                    "end": 85.12000274658203,
+                    "text": "Hallo, ich hei\\u00dfe Laura. Sch\\u00f6n, dich kennenzulernen. And now, let\"s see the same sentence in formal"
+                },
+                {
+                    "start": 85.12000274658203,
+                    "end": 89.91999816894531,
+                    "text": "speech. Guten Tag, ich hei\\u00dfe Laura Maier. Sch\\u00f6n,"
+                },
+                {
+                    "start": 89.91999816894531,
+                    "end": 96.31999969482422,
+                    "text": "sie kennenzulernen. Good day, I\"m Laura Maier. Nice to meet you."
+                },
+                {
+                    "start": 96.31999969482422,
+                    "end": 103.63999938964844,
+                    "text": "Guten Tag, ich hei\\u00dfe Laura Maier. Sch\\u00f6n, sie kennenzulernen."
+                },
+                {
+                    "start": 103.63999938964844,
+                    "end": 109.44000244140625,
+                    "text": "So what has changed from the previous introduction? Let\"s take a close look at these expressions"
+                },
+                {
+                    "start": 109.44000244140625,
+                    "end": 113.55999755859375,
+                    "text": "together. Hallo has been substituted with the formal"
+                },
+                {
+                    "start": 113.55999755859375,
+                    "end": 120.27999877929688,
+                    "text": "greeting Guten Tag, German for good day. Ich hei\\u00dfe Laura has not been changed. Ich"
+                },
+                {
+                    "start": 120.27999877929688,
+                    "end": 126.5199966430664,
+                    "text": "hei\\u00dfe simply means I am. However, during a formal self-introduction, we also say our"
+                },
+                {
+                    "start": 126.5199966430664,
+                    "end": 133.27999877929688,
+                    "text": "last name. So I said Laura Maier. Here, you would say your full name."
+                },
+                {
+                    "start": 133.27999877929688,
+                    "end": 140.9600067138672,
+                    "text": "Finally, pay attention to the ending. We went from dich kennenzulernen to sie kennenzulernen."
+                },
+                {
+                    "start": 140.9600067138672,
+                    "end": 146.55999755859375,
+                    "text": "What is changing is the German word for you. In a formal sentence, we use the more polite"
+                },
+                {
+                    "start": 146.55999755859375,
+                    "end": 152.0,
+                    "text": "word sie. One more time. The informal way to introduce"
+                },
+                {
+                    "start": 152.0,
+                    "end": 157.9600067138672,
+                    "text": "yourself in German is Hallo, ich hei\\u00dfe Laura. Sch\\u00f6n, dich kennenzulernen."
+                },
+                {
+                    "start": 157.9600067138672,
+                    "end": 166.39999389648438,
+                    "text": "The formal way to introduce yourself is Guten Tag, ich hei\\u00dfe Laura Maier. Sch\\u00f6n, sie kennenzulernen."
+                },
+                {
+                    "start": 166.39999389648438,
+                    "end": 171.8800048828125,
+                    "text": "Now it\"s time for Laura\"s insights. When you introduce yourself, it\"s a good habit"
+                },
+                {
+                    "start": 171.8800048828125,
+                    "end": 177.39999389648438,
+                    "text": "to shake hands. If you\"re not sure whether to use sch\\u00f6n, dich kennenzulernen or sch\\u00f6n,"
+                },
+                {
+                    "start": 177.39999389648438,
+                    "end": 183.60000610351562,
+                    "text": "sie kennenzulernen, just say simply sehr erfreut, as I said at the beginning of this lesson."
+                },
+                {
+                    "start": 183.60000610351562,
+                    "end": 190.27999877929688,
+                    "text": "If you use the correct sentence with German people, they\"re definitely going to be impressed."
+                },
+                {
+                    "start": 190.27999877929688,
+                    "end": 195.60000610351562,
+                    "text": "That\"s it for this lesson. Do you know how we say thank you in German? We\"ll learn how"
+                },
+                {
+                    "start": 195.60000610351562,
+                    "end": 201.8000030517578,
+                    "text": "to say this and many other words in the next lesson. Bis bald zur n\\u00e4chsten Lektion. See"
+                },
+                {
+                    "start": 201.8000030517578,
+                    "end": 202.47999572753906,
+                    "text": "you then!"
+                }
+            ]
+        }
+    }", "attributes": {"ApproximateReceiveCount": "6", "AWSTraceHeader": "Root=1-685e66ac-b1978f04bf6047ed4f9cecba;Parent=43202a35cd7a3845;Sampled=0;Lineage=2:a6c6e5de: 0", "SentTimestamp": "1751017171747", "SenderId": "AROAZPSMT5WS7CFKPAZ7E:semantic-video-chat-dev-transcription", "ApproximateFirstReceiveTimestamp": "1751017171752"}, "messageAttributes": {}, "md5OfBody": "1310b64abc77acdec4e05d7e5f04226e", "eventSource": "aws:sqs", "eventSourceARN": "arn:aws:sqs:eu-central-1: 651921976741:semantic-video-chat-dev-embeddings-queue", "awsRegion": "eu-central-1"}]}

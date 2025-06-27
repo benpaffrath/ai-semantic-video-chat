@@ -1,4 +1,6 @@
 langchain-core
+langchain-openai
+langchain-text-splitters
 pydantic
 jiter
-openai
+numpy
