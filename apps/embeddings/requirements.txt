@@ -1,1 +1,3 @@
-boto3
+pinecone
+pinecone_plugin_interface
+langchain-pinecone

@@ -37,3 +37,8 @@ variable "langsmith_secret_arn" {
   description = "The ARN of the LangSmith secret"
   default     = ""
 }
+
+variable "pinecone_index_name" {
+  description = "The Index name of the Pinecone Vector Store"
+  default     = ""
+}

@@ -43,6 +43,7 @@ def lambda_handler(event, context=None):
                 "userId": user_id,
                 "videoId": video_id,
                 "videoKey": video_key,
+                "knowledgeRoomId": knowledge_room_id,
                 "transcript": transcript
             })
 

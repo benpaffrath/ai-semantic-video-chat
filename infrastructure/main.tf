@@ -11,8 +11,9 @@ provider "aws" {
 }
 
 locals {
-  environment = terraform.workspace == "default" ? "production" : terraform.workspace
-  domain_name = terraform.workspace == "default" ? "${var.application_name}.realyte.digital" : "${terraform.workspace}.${var.application_name}.realyte.digital"
+  environment         = terraform.workspace == "default" ? "production" : terraform.workspace
+  domain_name         = terraform.workspace == "default" ? "${var.application_name}.realyte.digital" : "${terraform.workspace}.${var.application_name}.realyte.digital"
+  pinecone_index_name = "semantic-video-chat"
   tags = {
     ApplicationName = var.application_name
     Environment     = local.environment
@@ -51,6 +52,8 @@ module "embeddings" {
   openai_secret_arn    = module.secrets.openai_secret_arn
   pinecone_secret_arn  = module.secrets.pinecone_secret_arn
   langsmith_secret_arn = module.secrets.langsmith_secret_arn
+  pinecone_index_name  = local.pinecone_index_name
+  langchain_layer_arn  = module.layers.langchain_layer_arn
   tags                 = local.tags
 }
 
@@ -63,6 +66,7 @@ module "chats" {
   openai_secret_arn    = module.secrets.openai_secret_arn
   pinecone_secret_arn  = module.secrets.pinecone_secret_arn
   langsmith_secret_arn = module.secrets.langsmith_secret_arn
+  pinecone_index_name  = local.pinecone_index_name
   tags                 = local.tags
 }
 

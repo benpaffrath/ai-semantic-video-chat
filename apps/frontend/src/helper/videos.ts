@@ -7,7 +7,7 @@
  */
 export const generateVideoPreviewImage = (
     file: File,
-    seekTo = 1,
+    seekTo = 2,
 ): Promise<string> => {
     return new Promise((resolve, reject) => {
         const video = document.createElement('video')

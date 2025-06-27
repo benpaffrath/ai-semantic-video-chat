@@ -20,13 +20,17 @@ resource "aws_lambda_function" "embeddings-function" {
 
   role = aws_iam_role.function_role.arn
 
+  layers = [var.langchain_layer_arn]
+
   memory_size = local.function_memory_size
 
   environment {
     variables = {
       ENVIRONMENT                    = var.environment
       PINECONE_SECRET_ARN            = var.pinecone_secret_arn
+      OPENAI_SECRET_ARN              = var.openai_secret_arn
       SEMANTIC_VIDEO_CHAT_TABLE_NAME = var.dynamodb_table_name
+      PINECONE_INDEX_NAME            = var.pinecone_index_name
     }
   }
 
