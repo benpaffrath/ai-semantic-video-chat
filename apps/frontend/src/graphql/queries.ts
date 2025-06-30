@@ -35,3 +35,20 @@ export const LIST_VIDEOS = gql`
         }
     }
 `
+
+export const LIST_CHAT_MESSAGES = gql`
+    query listChatMessages(
+        $knowledgeRoomId: String!
+        $conversationId: String!
+    ) {
+        listChatMessages(
+            knowledgeRoomId: $knowledgeRoomId
+            conversationId: $conversationId
+        ) {
+            id
+            content
+            isUserMessage
+            createdAt
+        }
+    }
+`

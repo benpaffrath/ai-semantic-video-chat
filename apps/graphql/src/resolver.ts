@@ -5,6 +5,7 @@ import {
     insertConversation,
     insertKnowledgeRoom,
     insertVideo,
+    listChatMessagesByConversation,
     listConversationsByKnowledgeRoom,
     listKnowledgeRoomsByUserId,
     listVideosByKnowledgeRoom,
@@ -59,6 +60,24 @@ const clientResolvers = {
                             videoUrl,
                         }
                     }),
+                )
+            } catch (e) {
+                console.error(e)
+            }
+        },
+        listChatMessages: async (
+            _,
+            {
+                knowledgeRoomId,
+                conversationId,
+            }: { knowledgeRoomId: string; conversationId: string },
+            context: Context,
+        ) => {
+            try {
+                return await listChatMessagesByConversation(
+                    knowledgeRoomId,
+                    conversationId,
+                    context.userId,
                 )
             } catch (e) {
                 console.error(e)

@@ -247,4 +247,35 @@ export async function listVideosByKnowledgeRoom(
     )
 }
 
+export async function listChatMessagesByConversation(
+    knowledgeRoomId: string,
+    conversationId: string,
+    userId: string,
+): Promise<ChatMessage[]> {
+    const command = new QueryCommand({
+        TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
+        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :skPrefix)',
+        FilterExpression: 'userId = :userId',
+        ExpressionAttributeValues: {
+            ':pk': {
+                S: `ROOM#${knowledgeRoomId}#CONVERSATION#${conversationId}`,
+            },
+            ':skPrefix': { S: 'MESSAGE#' },
+            ':userId': { S: userId },
+        },
+        ScanIndexForward: true, // sort ascending by SK (i.e., by created order)
+    })
+
+    const result = await client.send(command)
+
+    return (
+        result?.Items?.map((item) => ({
+            id: item.SK.S!.split('#')[1],
+            content: item.metadata?.M?.content.S || '',
+            isUserMessage: item.metadata?.M?.isUserMessage.BOOL || false,
+            createdAt: item.createdAt.S!,
+        })) || []
+    )
+}
+
 export default client
