@@ -33,3 +33,10 @@ export interface VideoObject {
     uploadUrl?: string
     createdAt?: string
 }
+
+export interface ChatMessage {
+    id: string
+    content: string
+    isUserMessage: true
+    createdAt: string
+}
