@@ -3,12 +3,14 @@ import boto3
 import os
 import logging
 from pinecone_client import init_client, upsert_chunks_to_pinecone
-from helper import chunk_transcript, update_video_status
+from helper import chunk_transcript, update_video_status, download_from_s3
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 secretsmanager = boto3.client("secretsmanager")
+
+S3_BUCKET_NAME = os.environ.get("S3_VIDEO_BUCKET_NAME")
 
 def get_api_key_from_secret(secret_arn: str) -> str:
     """
@@ -63,8 +65,20 @@ def lambda_handler(event: dict, context: object) -> dict:
             video_id = body["videoId"]
             user_id = body["userId"]
             knowledge_room_id = body["knowledgeRoomId"]
+            transcript_key = body["transcriptKey"]
 
-            transcript_segments = body.get("transcript", {}).get("segments", [])
+            # 1. Download transcript from S3
+            base_tmp_path = f"/tmp/{video_id}"
+            os.makedirs(base_tmp_path, exist_ok=True)
+
+            input_path = f"{base_tmp_path}/{os.path.basename(transcript_key)}"
+            download_from_s3(S3_BUCKET_NAME, transcript_key, input_path)
+
+            # 2. Load transcript
+            with open(input_path, "r", encoding="utf-8") as f:
+                transcript = json.load(f)
+
+            transcript_segments = transcript.get("segments", [])
 
             chunks = chunk_transcript(transcript_segments, chunk_size=1000, chunk_overlap=100)
 

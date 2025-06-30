@@ -52,6 +52,8 @@ module "embeddings" {
   openai_secret_arn    = module.secrets.openai_secret_arn
   pinecone_secret_arn  = module.secrets.pinecone_secret_arn
   langsmith_secret_arn = module.secrets.langsmith_secret_arn
+  s3_video_bucket_arn  = module.storage.s3_video_bucket_arn
+  s3_video_bucket_name = module.storage.s3_video_bucket_name
   pinecone_index_name  = local.pinecone_index_name
   langchain_layer_arn  = module.layers.langchain_layer_arn
   tags                 = local.tags

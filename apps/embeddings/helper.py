@@ -7,8 +7,22 @@ from botocore.exceptions import ClientError
 logger = logging.getLogger()
 
 dynamodb = boto3.client("dynamodb")
+s3 = boto3.client("s3")
 
 DDB_TABLE_NAME = os.environ["SEMANTIC_VIDEO_CHAT_TABLE_NAME"]
+
+def download_from_s3(bucket: str, key: str, local_path: str) -> None:
+    """
+    Downloads a file from S3 to a local path.
+    """
+    try:
+        logger.info(f"Downloading s3://{bucket}/{key} to {local_path}")
+        s3.download_file(bucket, key, local_path)
+        logger.info("Download done!")
+    except ClientError as e:
+        logger.error(f"Failed to download file from S3: {e}")
+        raise
+
 
 def chunk_transcript(
     transcript_segments: List[Dict[str, float | str]],
