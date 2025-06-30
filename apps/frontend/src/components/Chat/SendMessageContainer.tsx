@@ -9,7 +9,7 @@ import { useApolloClient } from '@apollo/client'
 import { IconSend } from '@tabler/icons-react'
 import { useAtom } from 'jotai'
 import { nanoid } from 'nanoid'
-import { useState, useRef, useEffect, ChangeEvent } from 'react'
+import { useState, useRef, useEffect, ChangeEvent, KeyboardEvent } from 'react'
 
 export default function SendMessageContainer() {
     const client = useApolloClient()
@@ -31,8 +31,16 @@ export default function SendMessageContainer() {
 
         el.style.height = 'auto'
         const newHeight = Math.min(el.scrollHeight, lineHeight * 4)
-
         el.style.height = newHeight + 'px'
+    }
+
+    const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault()
+            if (value.trim()) {
+                handleSubmit()
+            }
+        }
     }
 
     useEffect(() => {
@@ -104,11 +112,12 @@ export default function SendMessageContainer() {
                 rows={1}
                 value={value}
                 onChange={onChange}
+                onKeyDown={onKeyDown}
                 style={{ lineHeight: lineHeight + 'px', overflowY: 'auto' }}
             />
             <button
                 className="text-background disabled:text-gray-300 disabled:cursor-not-allowed"
-                disabled={!value}
+                disabled={!value.trim()}
                 onClick={handleSubmit}
             >
                 <IconSend />

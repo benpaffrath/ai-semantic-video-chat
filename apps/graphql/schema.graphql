@@ -85,6 +85,7 @@ type Query {
     listKnowledgeRooms: [KnowledgeRoom]
     listConversations(knowledgeRoomId: String!): [Conversation]
     listVideos(knowledgeRoomId: String!): [Video]
+    listChatMessages(knowledgeRoomId: String!, conversationId: String!): [ChatMessage]
 }
 
 type Mutation {
