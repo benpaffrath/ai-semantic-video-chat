@@ -31,6 +31,7 @@ resource "aws_lambda_function" "embeddings-function" {
       OPENAI_SECRET_ARN              = var.openai_secret_arn
       SEMANTIC_VIDEO_CHAT_TABLE_NAME = var.dynamodb_table_name
       PINECONE_INDEX_NAME            = var.pinecone_index_name
+      S3_VIDEO_BUCKET_NAME           = var.s3_video_bucket_name
     }
   }
 
@@ -100,6 +101,13 @@ resource "aws_iam_role_policy" "function_policy" {
           var.pinecone_secret_arn,
           var.langsmith_secret_arn
         ]
+      },
+      {
+        Effect : "Allow",
+        Action : [
+          "s3:GetObject",
+        ],
+        Resource : "${var.s3_video_bucket_arn}/*"
       }
     ]
   })

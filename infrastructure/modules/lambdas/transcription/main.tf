@@ -111,6 +111,7 @@ resource "aws_iam_role_policy" "function_policy" {
         Effect : "Allow",
         Action : [
           "s3:GetObject",
+          "s3:PutObject"
         ],
         Resource : "${var.s3_video_bucket_arn}/*"
       }
