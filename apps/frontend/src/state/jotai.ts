@@ -1,5 +1,10 @@
 import { atom } from 'jotai'
-import type { Conversation, KnowledgeRoom, VideoObject } from '@/types'
+import type {
+    ChatMessage,
+    Conversation,
+    KnowledgeRoom,
+    VideoObject,
+} from '@/types'
 
 export const currentKnowledgeRoomAtom = atom<KnowledgeRoom | null>(null)
 export const currentConversationAtom = atom<Conversation | null>(null)
@@ -11,5 +16,15 @@ export const sortedVideosAtom = atom((get) =>
         (a: VideoObject, b: VideoObject) =>
             new Date(b.createdAt || new Date()).getTime() -
             new Date(a.createdAt || new Date()).getTime(),
+    ),
+)
+
+export const currentChatMessagesAtom = atom<ChatMessage[]>([])
+
+export const sortedChatMessagesAtom = atom((get) =>
+    [...get(currentChatMessagesAtom)].sort(
+        (a: ChatMessage, b: ChatMessage) =>
+            new Date(a.createdAt || new Date()).getTime() -
+            new Date(b.createdAt || new Date()).getTime(),
     ),
 )

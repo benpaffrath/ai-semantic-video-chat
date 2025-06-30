@@ -1,5 +1,6 @@
 'use client'
 
+import ChatContainer from '@/components/Chat/ChatContainer'
 import VideosContainer from '@/components/Videos/VideosContainer'
 import { getUserToken } from '@/helper/userToken'
 import { currentKnowledgeRoomAtom } from '@/state/jotai'
@@ -18,10 +19,7 @@ export default function Home() {
 
     return (
         <div className="bg-white/10 my-8 mr-8 w-full rounded-2xl p-8 flex flex-col gap-8">
-            <h1 className="text-2xl font-bold h-[32px]">
-                {currentKnowledgeRoom?.title}
-            </h1>
-            <main className="flex gap-8 overflow-hidden">
+            <main className="flex gap-8 overflow-hidden h-full">
                 {false && (
                     <div className="flex flex-col gap-4 justify-center py-40 text-center">
                         <IconLibrary size={100} className="m-auto" />
@@ -38,7 +36,13 @@ export default function Home() {
                         </div>
                     </div>
                 )}
-                <VideosContainer />
+                <div className="flex flex-col gap-4">
+                    <h1 className="text-2xl font-bold h-[32px]">
+                        {currentKnowledgeRoom?.title}
+                    </h1>
+                    <VideosContainer />
+                </div>
+                <ChatContainer />
             </main>
         </div>
     )
