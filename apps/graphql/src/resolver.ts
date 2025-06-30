@@ -1,5 +1,7 @@
+import { nanoid } from 'nanoid'
 import { Context } from './context'
 import {
+    insertChatMessage,
     insertConversation,
     insertKnowledgeRoom,
     insertVideo,
@@ -9,6 +11,9 @@ import {
 } from './helper/dynamodb'
 import { generatePresignedUploadUrl, generatePresignedUrl } from './helper/s3'
 import { sendVideoEventToSQS } from './helper/sqs'
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
+
+const lambdaClient = new LambdaClient({ region: 'eu-central-1' })
 
 const clientResolvers = {
     Query: {
@@ -151,6 +156,53 @@ const clientResolvers = {
                 console.log('Message ID', messageId)
 
                 return video
+            } catch (e) {
+                console.error(e)
+            }
+        },
+        sendChatMessage: async (
+            _,
+            { input, knowledgeRoomId, conversationId },
+            context: Context,
+        ) => {
+            try {
+                const history = ''
+
+                const message = insertChatMessage(
+                    input.id,
+                    input.content,
+                    true,
+                    knowledgeRoomId,
+                    conversationId,
+                    context.userId,
+                )
+
+                const command = new InvokeCommand({
+                    FunctionName: process.env.CHATS_LAMBDA_ARN,
+                    Payload: Buffer.from(JSON.stringify({ message, history })),
+                })
+
+                const response = await lambdaClient.send(command)
+
+                if (response.Payload) {
+                    const parsedResponse = JSON.parse(
+                        Buffer.from(response.Payload).toString(),
+                    )
+
+                    // Insert response message to DB
+                    const resMessage = insertChatMessage(
+                        nanoid(),
+                        parsedResponse.content,
+                        false,
+                        knowledgeRoomId,
+                        conversationId,
+                        context.userId,
+                    )
+
+                    return resMessage
+                }
+
+                throw Error('No response message')
             } catch (e) {
                 console.error(e)
             }

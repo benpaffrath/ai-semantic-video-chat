@@ -44,3 +44,22 @@ export const CREATE_VIDEO = gql`
         }
     }
 `
+
+export const SEND_CHAT_MESSAGE = gql`
+    mutation sendChatMessage(
+        $input: SendChatMessageInput!
+        $knowledgeRoomId: String!
+        $conversationId: String!
+    ) {
+        sendChatMessage(
+            input: $input
+            knowledgeRoomId: $knowledgeRoomId
+            conversationId: $conversationId
+        ) {
+            id
+            content
+            isUserMessage
+            createdAt
+        }
+    }
+`

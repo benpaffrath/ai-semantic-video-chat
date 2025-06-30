@@ -1,12 +1,22 @@
-import { currentChatMessagesAtom } from '@/state/jotai'
+import { SEND_CHAT_MESSAGE } from '@/graphql/mutations'
+import {
+    currentChatMessagesAtom,
+    currentConversationAtom,
+    currentKnowledgeRoomAtom,
+} from '@/state/jotai'
 import { ChatMessage } from '@/types'
+import { useApolloClient } from '@apollo/client'
 import { IconSend } from '@tabler/icons-react'
 import { useAtom } from 'jotai'
 import { nanoid } from 'nanoid'
 import { useState, useRef, useEffect, ChangeEvent } from 'react'
 
 export default function SendMessageContainer() {
+    const client = useApolloClient()
+
     const [, setCurrentChatMessages] = useAtom(currentChatMessagesAtom)
+    const [currentKnowledgeRoom] = useAtom(currentKnowledgeRoomAtom)
+    const [currentConversation] = useAtom(currentConversationAtom)
 
     const [value, setValue] = useState('')
     const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -32,15 +42,57 @@ export default function SendMessageContainer() {
     }, [])
 
     const handleSubmit = async () => {
-        const message: ChatMessage = {
+        const userCreatedAt = new Date()
+
+        const userMessage: ChatMessage = {
             id: nanoid(),
             content: value,
             isUserMessage: true,
-            createdAt: new Date().toUTCString(),
+            createdAt: new Date(userCreatedAt).toUTCString(),
         }
 
-        setCurrentChatMessages((prev) => [message, ...prev])
+        const loadingMessage: ChatMessage = {
+            id: 'loading',
+            content: '...',
+            isUserMessage: false,
+            createdAt: new Date(userCreatedAt.getTime() + 1000).toUTCString(),
+        }
+
+        setCurrentChatMessages((prev) => [userMessage, ...prev])
         setValue('')
+
+        const timeout = setTimeout(() => {
+            setCurrentChatMessages((prev) => [loadingMessage, ...prev])
+        }, 400)
+
+        try {
+            const res = await client.mutate({
+                mutation: SEND_CHAT_MESSAGE,
+                variables: {
+                    input: {
+                        id: userMessage.id,
+                        content: userMessage.content,
+                    },
+                    knowledgeRoomId: currentKnowledgeRoom?.id,
+                    conversationId: currentConversation?.id,
+                },
+            })
+
+            clearTimeout(timeout)
+
+            setCurrentChatMessages((prev) => {
+                const withoutLoading = prev.filter(
+                    (msg) => msg.id !== 'loading',
+                )
+                return [res.data.sendChatMessage, ...withoutLoading]
+            })
+        } catch (e) {
+            console.error(e)
+            clearTimeout(timeout)
+            setCurrentChatMessages((prev) =>
+                prev.filter((msg) => msg.id !== 'loading'),
+            )
+        }
     }
 
     return (

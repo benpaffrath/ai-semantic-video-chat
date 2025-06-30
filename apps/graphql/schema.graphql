@@ -53,6 +53,13 @@ type Video {
     createdAt: String
 }
 
+type ChatMessage {
+    id: String!
+    content: String!
+    isUserMessage: Boolean
+    createdAt: String
+}
+
 input CreateUploadUrlInput {
     id: String!
     key: String
@@ -69,6 +76,11 @@ input CreateVideoInput {
     type: String!
 }
 
+input SendChatMessageInput {
+    id: String!
+    content: String!
+}
+
 type Query {
     listKnowledgeRooms: [KnowledgeRoom]
     listConversations(knowledgeRoomId: String!): [Conversation]
@@ -80,4 +92,9 @@ type Mutation {
     createConversation(title: String!, knowledgeRoomId: String!): Conversation
     createUploadUrls(input: [CreateUploadUrlInput!]!): [UploadUrl]!
     createVideo(input: CreateVideoInput!, knowledgeRoomId: String!): Video
+    sendChatMessage(
+        input: SendChatMessageInput!
+        knowledgeRoomId: String!
+        conversationId: String!
+    ): ChatMessage
 }
