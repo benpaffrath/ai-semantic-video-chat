@@ -1,7 +1,8 @@
-import json
+import time
 
 def lambda_handler(event, context):
+    time.sleep(3)
+
     return {
-        'statusCode': 200,
-        'body': json.dumps({'message': 'Hello from Chat Lambda!'})
+        'content': 'Hello from Chat Lambda!'
     }

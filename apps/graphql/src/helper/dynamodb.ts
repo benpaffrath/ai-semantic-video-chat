@@ -5,7 +5,7 @@ import {
     QueryCommand,
 } from '@aws-sdk/client-dynamodb'
 import { nanoid } from 'nanoid'
-import { Conversation, KnowledgeRoom, Video } from '../types'
+import { ChatMessage, Conversation, KnowledgeRoom, Video } from '../types'
 
 const client = new DynamoDBClient({
     region: 'eu-central-1',
@@ -117,6 +117,44 @@ export async function insertVideo(
         videoKey,
         type,
         status,
+        createdAt,
+    }
+}
+
+export async function insertChatMessage(
+    messageId: string,
+    content: string,
+    isUserMessage: boolean,
+    knowledgeRoomId: string,
+    conversationId: string,
+    userId: string,
+): Promise<ChatMessage> {
+    const createdAt = new Date().toUTCString()
+
+    const params: PutItemCommandInput = {
+        TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
+        Item: {
+            PK: { S: `ROOM#${knowledgeRoomId}#CONVERSATION#${conversationId}` },
+            SK: { S: `MESSAGE#${messageId}` },
+            type: { S: 'ChatMessage' },
+            metadata: {
+                M: {
+                    content: { S: content },
+                    isUserMessage: { BOOL: isUserMessage },
+                },
+            },
+            userId: { S: userId },
+            createdAt: { S: createdAt },
+        },
+    }
+
+    const command = new PutItemCommand(params)
+    await client.send(command)
+
+    return {
+        id: messageId,
+        content,
+        isUserMessage,
         createdAt,
     }
 }

@@ -21,3 +21,10 @@ export interface Video {
     status: string
     createdAt: string
 }
+
+export interface ChatMessage {
+    id: string
+    content: string
+    isUserMessage: boolean
+    createdAt: string
+}

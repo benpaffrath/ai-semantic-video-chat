@@ -37,6 +37,6 @@ export interface VideoObject {
 export interface ChatMessage {
     id: string
     content: string
-    isUserMessage: true
+    isUserMessage: boolean
     createdAt: string
 }
