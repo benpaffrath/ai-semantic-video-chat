@@ -20,6 +20,8 @@ resource "aws_lambda_function" "chats-function" {
 
   role = aws_iam_role.function_role.arn
 
+  layers = [var.langchain_layer_arn]
+
   memory_size = local.function_memory_size
 
   environment {

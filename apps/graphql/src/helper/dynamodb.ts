@@ -5,7 +5,13 @@ import {
     QueryCommand,
 } from '@aws-sdk/client-dynamodb'
 import { nanoid } from 'nanoid'
-import { ChatMessage, Conversation, KnowledgeRoom, Video } from '../types'
+import {
+    ChatMessage,
+    Conversation,
+    KnowledgeRoom,
+    RelatedDocuments,
+    Video,
+} from '../types'
 
 const client = new DynamoDBClient({
     region: 'eu-central-1',
@@ -124,6 +130,7 @@ export async function insertVideo(
 export async function insertChatMessage(
     messageId: string,
     content: string,
+    relatedDocuments: RelatedDocuments[],
     isUserMessage: boolean,
     knowledgeRoomId: string,
     conversationId: string,
@@ -141,6 +148,15 @@ export async function insertChatMessage(
                 M: {
                     content: { S: content },
                     isUserMessage: { BOOL: isUserMessage },
+                    relatedDocuments: {
+                        L: relatedDocuments.map((doc) => ({
+                            M: {
+                                videoId: { S: doc.videoId },
+                                start: { N: doc.start.toString() },
+                                end: { N: doc.end.toString() },
+                            },
+                        })),
+                    },
                 },
             },
             userId: { S: userId },
@@ -155,6 +171,7 @@ export async function insertChatMessage(
         id: messageId,
         content,
         isUserMessage,
+        relatedDocuments,
         createdAt,
     }
 }
@@ -273,6 +290,12 @@ export async function listChatMessagesByConversation(
             id: item.SK.S!.split('#')[1],
             content: item.metadata?.M?.content.S || '',
             isUserMessage: item.metadata?.M?.isUserMessage.BOOL || false,
+            relatedDocuments:
+                item.metadata?.M?.relatedDocuments?.L?.map((doc) => ({
+                    videoId: doc.M?.videoId?.S || '',
+                    start: parseInt(doc.M?.start.N || '0', 10),
+                    end: parseInt(doc.M?.end.N || '0', 10),
+                })) || [],
             createdAt: item.createdAt.S!,
         })) || []
     )

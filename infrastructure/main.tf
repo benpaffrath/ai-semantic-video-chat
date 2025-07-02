@@ -69,6 +69,7 @@ module "chats" {
   pinecone_secret_arn  = module.secrets.pinecone_secret_arn
   langsmith_secret_arn = module.secrets.langsmith_secret_arn
   pinecone_index_name  = local.pinecone_index_name
+  langchain_layer_arn  = module.layers.langchain_layer_arn
   tags                 = local.tags
 }
 

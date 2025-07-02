@@ -48,6 +48,11 @@ export const LIST_CHAT_MESSAGES = gql`
             id
             content
             isUserMessage
+            relatedDocuments {
+                videoId
+                start
+                end
+            }
             createdAt
         }
     }

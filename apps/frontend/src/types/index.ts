@@ -1,3 +1,14 @@
+import type { JSX as Jsx } from 'react/jsx-runtime'
+
+declare global {
+    /* eslint-disable @typescript-eslint/no-namespace */
+    namespace JSX {
+        type ElementClass = Jsx.ElementClass
+        type Element = Jsx.Element
+        type IntrinsicElements = Jsx.IntrinsicElements
+    }
+}
+
 export enum VideoProgressStatus {
     INIT = 'INIT',
     UPLOADING = 'UPLOADING',
@@ -34,9 +45,16 @@ export interface VideoObject {
     createdAt?: string
 }
 
+export interface RelatedDocument {
+    videoId: string
+    start: number
+    end: number
+}
+
 export interface ChatMessage {
     id: string
     content: string
     isUserMessage: boolean
+    relatedDocuments: RelatedDocument[]
     createdAt: string
 }

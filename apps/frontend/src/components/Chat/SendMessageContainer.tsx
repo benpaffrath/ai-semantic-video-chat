@@ -56,6 +56,7 @@ export default function SendMessageContainer() {
             id: nanoid(),
             content: value,
             isUserMessage: true,
+            relatedDocuments: [],
             createdAt: new Date(userCreatedAt).toUTCString(),
         }
 
@@ -63,6 +64,7 @@ export default function SendMessageContainer() {
             id: 'loading',
             content: '...',
             isUserMessage: false,
+            relatedDocuments: [],
             createdAt: new Date(userCreatedAt.getTime() + 1000).toUTCString(),
         }
 
@@ -95,11 +97,21 @@ export default function SendMessageContainer() {
                 return [res.data.sendChatMessage, ...withoutLoading]
             })
         } catch (e) {
+            const errorMessage: ChatMessage = {
+                id: 'error',
+                content: 'An error has occurred. Please try again.',
+                isUserMessage: false,
+                relatedDocuments: [],
+                createdAt: new Date(
+                    userCreatedAt.getTime() + 1000,
+                ).toUTCString(),
+            }
             console.error(e)
             clearTimeout(timeout)
-            setCurrentChatMessages((prev) =>
-                prev.filter((msg) => msg.id !== 'loading'),
-            )
+            setCurrentChatMessages((prev) => [
+                errorMessage,
+                ...prev.filter((msg) => msg.id !== 'loading'),
+            ])
         }
     }
 

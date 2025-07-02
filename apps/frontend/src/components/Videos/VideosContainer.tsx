@@ -41,7 +41,7 @@ export default function VideosContainer() {
     }, [data])
 
     return (
-        <div className="flex flex-col gap-4 w-[350px]">
+        <div className="flex flex-col gap-4 w-[350px] overflow-hidden">
             <FileUploadDropzone />
             <div className="overflow-x-auto">
                 <div className="flex flex-col gap-2 ">

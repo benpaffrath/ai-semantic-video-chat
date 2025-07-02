@@ -68,6 +68,9 @@ clean-embeddings:
 install-chats:
 	$(MAKE) -C $(CHATS_DIR) install
 
+docker-install-chats:
+	$(MAKE) -C $(CHATS_DIR) docker-install		
+
 package-chats:
 	$(MAKE) -C $(CHATS_DIR) package
 
@@ -100,7 +103,7 @@ clean-ffmpeg-layer:
 
 clean: clean-frontend clean-graphql clean-transcription clean-embeddings clean-chats clean-langchain-layer clean-ffmpeg-layer
 
-install: install-frontend install-graphql install-transcription docker-install-embeddings install-chats docker-install-langchain-layer
+install: install-frontend install-graphql install-transcription docker-install-embeddings docker-install-chats docker-install-langchain-layer
 
 lint: lint-frontend
 

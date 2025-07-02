@@ -13,6 +13,7 @@ import {
 import { generatePresignedUploadUrl, generatePresignedUrl } from './helper/s3'
 import { sendVideoEventToSQS } from './helper/sqs'
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
+import { GraphQLError } from 'graphql'
 
 const lambdaClient = new LambdaClient({ region: 'eu-central-1' })
 
@@ -185,11 +186,22 @@ const clientResolvers = {
             context: Context,
         ) => {
             try {
-                const history = ''
+                const history = await listChatMessagesByConversation(
+                    knowledgeRoomId,
+                    conversationId,
+                    context.userId,
+                )
 
-                const message = insertChatMessage(
+                const sortedHistory = history.sort(
+                    (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime(),
+                )
+
+                const message = await insertChatMessage(
                     input.id,
                     input.content,
+                    [],
                     true,
                     knowledgeRoomId,
                     conversationId,
@@ -198,7 +210,14 @@ const clientResolvers = {
 
                 const command = new InvokeCommand({
                     FunctionName: process.env.CHATS_LAMBDA_ARN,
-                    Payload: Buffer.from(JSON.stringify({ message, history })),
+                    Payload: Buffer.from(
+                        JSON.stringify({
+                            userId: context.userId,
+                            knowledgeRoomId: knowledgeRoomId,
+                            message: message.content,
+                            history: sortedHistory,
+                        }),
+                    ),
                 })
 
                 const response = await lambdaClient.send(command)
@@ -208,10 +227,20 @@ const clientResolvers = {
                         Buffer.from(response.Payload).toString(),
                     )
 
+                    const relatedDocuments =
+                        parsedResponse?.metadata?.map((m) => ({
+                            videoId: m.video_id,
+                            start: m.start,
+                            end: m.end,
+                        })) || []
+
+                    console.log(parsedResponse)
+
                     // Insert response message to DB
-                    const resMessage = insertChatMessage(
+                    const resMessage = await insertChatMessage(
                         nanoid(),
-                        parsedResponse.content,
+                        parsedResponse.answer,
+                        relatedDocuments,
                         false,
                         knowledgeRoomId,
                         conversationId,
@@ -224,6 +253,9 @@ const clientResolvers = {
                 throw Error('No response message')
             } catch (e) {
                 console.error(e)
+                return Promise.reject(
+                    new GraphQLError('Cannot generate response message.'),
+                )
             }
         },
     },
