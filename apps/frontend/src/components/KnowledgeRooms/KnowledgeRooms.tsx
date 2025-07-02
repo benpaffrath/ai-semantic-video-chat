@@ -3,7 +3,7 @@
 import { IconLayoutDashboard, IconPlus } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
 import PrimaryButton from '../Button/PrimaryButton'
-import { currentKnowledgeRoomAtom } from '@/state/jotai'
+import { currentKnowledgeRoomAtom, currentVideosAtom } from '@/state/jotai'
 import { useAtom } from 'jotai'
 import BasicInputDialog from '../BasicInputDialog/BasicInputDialog'
 import { CREATE_KNOWLEDGE_ROOM } from '@/graphql/mutations'
@@ -21,6 +21,8 @@ export default function KnowledgeRooms() {
     const [currentKnowledgeRoom, setCurrentKnowledgeRoom] = useAtom(
         currentKnowledgeRoomAtom,
     )
+
+    const [, setCurrentVideos] = useAtom(currentVideosAtom)
 
     const { data, loading } = useQuery(LIST_KNOWLEDGE_ROOMS, {
         fetchPolicy: 'network-only',
@@ -46,6 +48,7 @@ export default function KnowledgeRooms() {
 
     const handleKnowledgeRoomChange = (knowledgeRoom: KnowledgeRoom) => {
         setCurrentKnowledgeRoom(knowledgeRoom)
+        setCurrentVideos([])
     }
 
     const handleSubmit = async (title: string) => {
