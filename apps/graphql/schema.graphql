@@ -53,10 +53,17 @@ type Video {
     createdAt: String
 }
 
+type RelatedDocument {
+    videoId: String!
+    start: Int
+    end: Int
+}
+
 type ChatMessage {
     id: String!
     content: String!
     isUserMessage: Boolean
+    relatedDocuments: [RelatedDocument]
     createdAt: String
 }
 
@@ -85,7 +92,10 @@ type Query {
     listKnowledgeRooms: [KnowledgeRoom]
     listConversations(knowledgeRoomId: String!): [Conversation]
     listVideos(knowledgeRoomId: String!): [Video]
-    listChatMessages(knowledgeRoomId: String!, conversationId: String!): [ChatMessage]
+    listChatMessages(
+        knowledgeRoomId: String!
+        conversationId: String!
+    ): [ChatMessage]
 }
 
 type Mutation {

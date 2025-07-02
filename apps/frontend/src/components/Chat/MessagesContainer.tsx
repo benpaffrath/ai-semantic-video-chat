@@ -3,16 +3,20 @@ import {
     currentChatMessagesAtom,
     currentConversationAtom,
     currentKnowledgeRoomAtom,
+    currentVideosAtom,
     sortedChatMessagesAtom,
 } from '@/state/jotai'
 import { useQuery } from '@apollo/client'
 import { IconMessageCirclePlus } from '@tabler/icons-react'
 import { useAtom } from 'jotai'
 import { useEffect, useRef } from 'react'
+import VideoSource from './VideoSource'
+import ReactMarkdown from 'react-markdown'
 
 export default function MessagesContainer() {
     const [currentKnowledgeRoom] = useAtom(currentKnowledgeRoomAtom)
     const [currentConversation] = useAtom(currentConversationAtom)
+    const [currentVideos] = useAtom(currentVideosAtom)
     const [, setCurrentChatMessages] = useAtom(currentChatMessagesAtom)
     const [sortedChatMessages] = useAtom(sortedChatMessagesAtom)
     const lastMessageRef = useRef<HTMLDivElement>(null)
@@ -28,6 +32,7 @@ export default function MessagesContainer() {
 
     useEffect(() => {
         if (data?.listChatMessages) {
+            console.log(data.listChatMessages)
             setCurrentChatMessages(data.listChatMessages)
         }
     }, [currentConversation, data, setCurrentChatMessages])
@@ -89,10 +94,12 @@ export default function MessagesContainer() {
                         }`}
                     >
                         <div
-                            className={`w-fit max-w-2/3 px-4 py-3 rounded-2xl ${
-                                message.isUserMessage
-                                    ? 'bg-primary text-background'
-                                    : 'bg-background'
+                            className={`w-fit max-w-3/4 px-4 py-3 rounded-2xl ${
+                                message.id === 'error'
+                                    ? 'bg-red-200'
+                                    : message.isUserMessage
+                                      ? 'bg-primary text-background'
+                                      : 'bg-background'
                             }`}
                         >
                             {message.id === 'loading' ? (
@@ -101,8 +108,31 @@ export default function MessagesContainer() {
                                     <div className="h-2 w-2 bg-white/60 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
                                     <div className="h-2 w-2 bg-white/60 rounded-full animate-bounce"></div>
                                 </div>
+                            ) : message.id === 'error' ? (
+                                <div className="flex space-x-1 justify-center items-center text-red-900">
+                                    {message.content}
+                                </div>
                             ) : (
-                                message.content
+                                <div className="flex flex-col gap-4">
+                                    <ReactMarkdown>
+                                        {message.content}
+                                    </ReactMarkdown>
+                                    {!!message?.relatedDocuments?.length && (
+                                        <div className="flex gap-2">
+                                            {message.relatedDocuments.map(
+                                                (doc, index) => (
+                                                    <VideoSource
+                                                        key={`${message.id}_${index}`}
+                                                        source={doc}
+                                                        videos={
+                                                            currentVideos || []
+                                                        }
+                                                    />
+                                                ),
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>

@@ -59,6 +59,11 @@ export const SEND_CHAT_MESSAGE = gql`
             id
             content
             isUserMessage
+            relatedDocuments {
+                videoId
+                start
+                end
+            }
             createdAt
         }
     }

@@ -34,9 +34,16 @@ export interface VideoObject {
     createdAt?: string
 }
 
+export interface RelatedDocument {
+    videoId: string
+    start: number
+    end: number
+}
+
 export interface ChatMessage {
     id: string
     content: string
     isUserMessage: boolean
+    relatedDocuments: RelatedDocument[]
     createdAt: string
 }

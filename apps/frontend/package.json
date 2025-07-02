@@ -14,13 +14,16 @@
     "@tabler/icons-react": "^3.34.0",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
+    "i": "^0.3.7",
     "jotai": "^2.12.5",
     "nanoid": "^5.1.5",
     "next": "15.3.4",
+    "npm": "^11.4.2",
     "react": "^19.0.0",
     "react-content-loader": "^7.0.2",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
+    "react-markdown": "^8.0.6",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
