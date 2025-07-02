@@ -1,8 +1,7 @@
 'use client'
 
-import { IconLayoutDashboard, IconPlus } from '@tabler/icons-react'
+import { IconMessageCircle, IconPlus } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
-import PrimaryButton from '../Button/PrimaryButton'
 import {
     currentConversationAtom,
     currentKnowledgeRoomAtom,
@@ -118,7 +117,16 @@ export default function Conversations() {
 
     return (
         <div className="flex flex-col gap-1 px-4">
-            <div className="px-4 mb-2 text-white/60 text-sm">Conversations</div>
+            <div className="flex items-center justify-between px-4 mb-2 text-white/60">
+                <div className="text-sm">Conversations</div>
+                <button
+                    disabled={loading || !currentKnowledgeRoom?.id}
+                    onClick={handleNewConversationDialog}
+                    className="flex gap-2 items-center text-primary/80 cursor-pointer hover:text-primary disabled:text-primary/30"
+                >
+                    New <IconPlus size={14} />
+                </button>
+            </div>
             <div className="flex flex-col gap-1 max-h-[152px]  overflow-x-auto">
                 {loading && (
                     <ContentLoader
@@ -195,21 +203,13 @@ export default function Conversations() {
                     <div
                         onClick={() => handleConversationChange(conversation)}
                         key={conversation.id}
-                        className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg hover:bg-black/40 ${currentConversation?.id === conversation.id ? 'bg-black/80 text-white' : 'text-white/80'}`}
+                        className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg hover:bg-black/50 ${currentConversation?.id === conversation.id ? 'bg-black/50 text-white' : 'text-white/80'}`}
                     >
-                        <IconLayoutDashboard />
+                        <IconMessageCircle />
                         {conversation.title}
                     </div>
                 ))}
             </div>
-            {!loading && currentKnowledgeRoom?.id && (
-                <PrimaryButton
-                    text="New Conversation"
-                    icon={<IconPlus size={21} />}
-                    onClick={handleNewConversationDialog}
-                />
-            )}
-
             <BasicInputDialog
                 open={!!openDialog}
                 title="New Conversation"
