@@ -21,6 +21,7 @@ export default function MessagesContainer() {
     const [currentVideos] = useAtom(currentVideosAtom)
     const [, setCurrentChatMessages] = useAtom(currentChatMessagesAtom)
     const [sortedChatMessages] = useAtom(sortedChatMessagesAtom)
+
     const lastMessageRef = useRef<HTMLDivElement>(null)
 
     const { data, loading } = useQuery(LIST_CHAT_MESSAGES, {
@@ -41,7 +42,10 @@ export default function MessagesContainer() {
 
     useEffect(() => {
         if (lastMessageRef.current) {
-            lastMessageRef.current.scrollIntoView({ behavior: 'smooth' })
+            lastMessageRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+            })
         }
     }, [sortedChatMessages])
 
@@ -89,6 +93,7 @@ export default function MessagesContainer() {
                     <div
                         key={message.id}
                         ref={isLast ? lastMessageRef : null}
+                        style={{ paddingBottom: isLast ? 16 : 0 }}
                         className={`flex w-full ${
                             message.isUserMessage
                                 ? 'justify-end'

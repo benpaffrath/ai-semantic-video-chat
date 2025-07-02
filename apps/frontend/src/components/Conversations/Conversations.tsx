@@ -72,12 +72,7 @@ export default function Conversations() {
                 }
             })
         }
-    }, [
-        currentKnowledgeRoom,
-        currentConversation,
-        refetch,
-        setCurrentConversation,
-    ])
+    }, [currentKnowledgeRoom])
 
     const handleNewConversationDialog = () => {
         setOpenDialog(!openDialog)
