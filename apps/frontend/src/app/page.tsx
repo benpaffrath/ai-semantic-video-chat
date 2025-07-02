@@ -3,8 +3,12 @@
 import ChatContainer from '@/components/Chat/ChatContainer'
 import VideosContainer from '@/components/Videos/VideosContainer'
 import { getUserToken } from '@/helper/userToken'
-import { currentKnowledgeRoomAtom, loadingAtom } from '@/state/jotai'
-import { IconLayoutDashboard } from '@tabler/icons-react'
+import {
+    currentConversationAtom,
+    currentKnowledgeRoomAtom,
+    loadingAtom,
+} from '@/state/jotai'
+import { IconChevronRight, IconLayoutDashboard } from '@tabler/icons-react'
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 
@@ -12,6 +16,7 @@ export default function Home() {
     const [userToken, setUserToken] = useState<string>('')
 
     const [currentKnowledgeRoom] = useAtom(currentKnowledgeRoomAtom)
+    const [currentConversation] = useAtom(currentConversationAtom)
     const [loading] = useAtom(loadingAtom)
 
     useEffect(() => {
@@ -46,10 +51,24 @@ export default function Home() {
             <main className="flex gap-8 overflow-hidden h-full">
                 {currentKnowledgeRoom?.id ? (
                     <>
-                        <div className="flex flex-col gap-4">
-                            <h1 className="text-2xl font-bold h-[32px]">
-                                {currentKnowledgeRoom?.title}
-                            </h1>
+                        <div className="flex flex-col gap-4  w-[350px]">
+                            <div className="text-xl font-bold h-[32px] flex gap-2 items-center overflow-hidden">
+                                <div className="whitespace-nowrap">
+                                    {currentKnowledgeRoom?.title}{' '}
+                                </div>
+                                {currentConversation?.id ? (
+                                    <>
+                                        <div>
+                                            <IconChevronRight size={21} />
+                                        </div>
+                                        <div className="overflow-hidden whitespace-nowrap text-ellipsis">
+                                            {currentConversation.title}
+                                        </div>
+                                    </>
+                                ) : (
+                                    ''
+                                )}
+                            </div>
                             <VideosContainer />
                         </div>
                         <ChatContainer />

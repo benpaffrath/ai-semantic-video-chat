@@ -139,7 +139,7 @@ export default function Conversations() {
                     New <IconPlus size={14} />
                 </button>
             </div>
-            <div className="flex flex-col gap-1 max-h-[152px]  overflow-x-auto">
+            <div className="flex flex-col gap-1 max-h-[152px] overflow-x-auto">
                 {loading.conversations && (
                     <ContentLoader
                         uniqueKey="c"

@@ -24,6 +24,7 @@
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
     "react-markdown": "^8.0.6",
+    "react-player": "^3.0.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

@@ -3,13 +3,10 @@ import VideoStatus from './VideoStatus'
 
 interface VideoProps {
     video: VideoObject
+    onClick: (video: VideoObject) => void
 }
 
-export default function Video({ video }: VideoProps) {
-    const handleClick = () => {
-        window.open(video.videoUrl, '_blank')
-    }
-
+export default function Video({ video, onClick }: VideoProps) {
     const secondsToHHMMSS = (totalSeconds: number): string => {
         const hours = Math.floor(totalSeconds / 3600)
         const minutes = Math.floor((totalSeconds % 3600) / 60)
@@ -21,7 +18,7 @@ export default function Video({ video }: VideoProps) {
 
     return (
         <div
-            onClick={handleClick}
+            onClick={() => onClick(video)}
             className="flex gap-4 bg-background hover:bg-black/60 p-4 rounded-lg w-full h-[92px] overflow-hidden cursor-pointer"
         >
             <div

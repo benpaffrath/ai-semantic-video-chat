@@ -11,11 +11,17 @@ import {
 import { useQuery } from '@apollo/client'
 import { IconMessageCirclePlus } from '@tabler/icons-react'
 import { useAtom } from 'jotai'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import VideoSource from './VideoSource'
 import ReactMarkdown from 'react-markdown'
+import { VideoObject } from '@/types'
+import VideoPlayerDialog from '../VideoPlayer/VideoPlayer'
 
 export default function MessagesContainer() {
+    const [currentVideo, setCurrentVideo] = useState<
+        (VideoObject & { start: number }) | null
+    >(null)
+
     const [currentKnowledgeRoom] = useAtom(currentKnowledgeRoomAtom)
     const [currentConversation] = useAtom(currentConversationAtom)
     const [currentVideos] = useAtom(currentVideosAtom)
@@ -134,6 +140,12 @@ export default function MessagesContainer() {
                                                         videos={
                                                             currentVideos || []
                                                         }
+                                                        onClick={(video) =>
+                                                            setCurrentVideo({
+                                                                ...video,
+                                                                start: doc.start,
+                                                            })
+                                                        }
                                                     />
                                                 ),
                                             )}
@@ -145,6 +157,12 @@ export default function MessagesContainer() {
                     </div>
                 )
             })}
+            <VideoPlayerDialog
+                open={!!currentVideo}
+                url={currentVideo?.videoUrl || ''}
+                seek={currentVideo?.start}
+                onClose={() => setCurrentVideo(null)}
+            />
         </div>
     )
 }
