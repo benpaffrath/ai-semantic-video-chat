@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend (Next.js)
 
-## Getting Started
+This directory contains the frontend application for the AI Semantic Video Chat project. It is built with [Next.js](https://nextjs.org/) and uses [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/), and modern React best practices.
 
-First, run the development server:
+## Project Structure
+
+- **src/app/**: Main application entry, global styles, layout, and routing.
+- **src/components/**: Reusable UI components, organized by feature (e.g., Chat, Sidebar, VideoPlayer, etc.).
+- **src/graphql/**: GraphQL client setup, queries, and mutations for API communication.
+- **src/helper/**: Utility functions for file uploads, user tokens, and video handling.
+- **src/state/**: State management using [Jotai](https://jotai.org/).
+- **src/types/**: TypeScript type definitions.
+- **public/**: Static assets (SVGs, icons, etc.).
+
+## Key Features
+
+- **Chat Interface**: Real-time chat UI for interacting with the AI agent.
+- **Video Player**: Embedded video player with semantic search and navigation.
+- **File Upload**: Drag-and-drop file upload for video and data ingestion.
+- **Knowledge Rooms**: Organize and manage different knowledge bases or chat rooms.
+- **Sidebar Navigation**: Quick access to conversations, videos, and knowledge rooms.
+
+## Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Technologies Used
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- Jotai (state management)
+- GraphQL (API communication)
 
-## Learn More
+## Customization
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Edit UI components in `src/components/`.
+- Update GraphQL queries/mutations in `src/graphql/`.
+- Add new pages or layouts in `src/app/`.
