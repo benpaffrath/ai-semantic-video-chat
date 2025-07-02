@@ -47,8 +47,10 @@ export default function KnowledgeRooms() {
     }
 
     const handleKnowledgeRoomChange = (knowledgeRoom: KnowledgeRoom) => {
-        setCurrentKnowledgeRoom(knowledgeRoom)
-        setCurrentVideos([])
+        if (currentKnowledgeRoom?.id !== knowledgeRoom?.id) {
+            setCurrentKnowledgeRoom(knowledgeRoom)
+            setCurrentVideos([])
+        }
     }
 
     const handleSubmit = async (title: string) => {
