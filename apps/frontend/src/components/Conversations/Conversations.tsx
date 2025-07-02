@@ -55,8 +55,6 @@ export default function Conversations() {
      */
     useEffect(() => {
         if (currentKnowledgeRoom) {
-            console.log('here')
-
             refetch().then((result) => {
                 const newConversations = [
                     ...(result.data?.listConversations || []),
