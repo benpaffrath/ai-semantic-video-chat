@@ -1,3 +1,5 @@
+'use client'
+
 import { LIST_CHAT_MESSAGES } from '@/graphql/queries'
 import {
     currentChatMessagesAtom,
