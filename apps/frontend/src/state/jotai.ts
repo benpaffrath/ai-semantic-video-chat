@@ -28,3 +28,13 @@ export const sortedChatMessagesAtom = atom((get) =>
             new Date(b.createdAt || new Date()).getTime(),
     ),
 )
+
+export const loadingAtom = atom<{
+    knowledgeRoom: boolean
+    conversations: boolean
+    videos: boolean
+}>({
+    knowledgeRoom: true,
+    conversations: true,
+    videos: false,
+})

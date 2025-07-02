@@ -2,7 +2,11 @@
 
 import { IconLayoutDashboard, IconPlus } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
-import { currentKnowledgeRoomAtom, currentVideosAtom } from '@/state/jotai'
+import {
+    currentKnowledgeRoomAtom,
+    currentVideosAtom,
+    loadingAtom,
+} from '@/state/jotai'
 import { useAtom } from 'jotai'
 import BasicInputDialog from '../BasicInputDialog/BasicInputDialog'
 import { CREATE_KNOWLEDGE_ROOM } from '@/graphql/mutations'
@@ -17,13 +21,14 @@ export default function KnowledgeRooms() {
     const [openDialog, setOpenDialog] = useState<boolean>(false)
     const [submitLoading, setSubmitLoading] = useState<boolean>(false)
 
+    const [loading, setLoading] = useAtom(loadingAtom)
     const [currentKnowledgeRoom, setCurrentKnowledgeRoom] = useAtom(
         currentKnowledgeRoomAtom,
     )
 
     const [, setCurrentVideos] = useAtom(currentVideosAtom)
 
-    const { data, loading } = useQuery(LIST_KNOWLEDGE_ROOMS, {
+    const { data, loading: klLoading } = useQuery(LIST_KNOWLEDGE_ROOMS, {
         fetchPolicy: 'network-only',
     })
 
@@ -36,10 +41,14 @@ export default function KnowledgeRooms() {
      * Select the first Knowledge Room by default
      */
     useEffect(() => {
-        if (!loading && rooms.length > 0 && !currentKnowledgeRoom) {
+        if (!klLoading && rooms.length > 0 && !currentKnowledgeRoom) {
             setCurrentKnowledgeRoom(rooms[0])
         }
-    }, [loading, rooms, currentKnowledgeRoom, setCurrentKnowledgeRoom])
+    }, [klLoading, rooms, currentKnowledgeRoom, setCurrentKnowledgeRoom])
+
+    useEffect(() => {
+        setLoading((prev) => ({ ...prev, knowledgeRoom: klLoading }))
+    }, [klLoading])
 
     const handleNewKnowledgeRoomDialog = () => {
         setOpenDialog(!openDialog)
@@ -79,14 +88,15 @@ export default function KnowledgeRooms() {
             <div className="flex items-center justify-between px-4 mb-2 text-white/60">
                 <div className="text-sm">Knowledge Rooms</div>
                 <button
+                    disabled={loading?.knowledgeRoom}
                     onClick={handleNewKnowledgeRoomDialog}
-                    className="flex gap-2 items-center text-primary/80 cursor-pointer hover:text-primary"
+                    className="flex gap-2 items-center text-primary/80 cursor-pointer hover:text-primary disabled:text-primary/30 disabled:cursor-wait"
                 >
                     New <IconPlus size={14} />
                 </button>
             </div>
             <div className="flex flex-col gap-1 max-h-[152px] min-h-[152px] overflow-x-auto">
-                {loading && (
+                {loading?.knowledgeRoom && (
                     <ContentLoader
                         uniqueKey="c"
                         speed={1}
@@ -148,7 +158,7 @@ export default function KnowledgeRooms() {
                         />
                     </ContentLoader>
                 )}
-                {!loading && !rooms?.length && (
+                {!loading?.knowledgeRoom && !rooms?.length && (
                     <div className="px-4 ">
                         Create a Knowledge Room!
                         <br />
@@ -157,7 +167,7 @@ export default function KnowledgeRooms() {
                         specific topic and chat only on that information.
                     </div>
                 )}
-                {!loading &&
+                {!loading?.knowledgeRoom &&
                     rooms.map((room) => (
                         <div
                             onClick={() => handleKnowledgeRoomChange(room)}
