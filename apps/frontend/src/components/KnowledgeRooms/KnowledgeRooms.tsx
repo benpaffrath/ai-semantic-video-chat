@@ -2,7 +2,6 @@
 
 import { IconLayoutDashboard, IconPlus } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
-import PrimaryButton from '../Button/PrimaryButton'
 import { currentKnowledgeRoomAtom, currentVideosAtom } from '@/state/jotai'
 import { useAtom } from 'jotai'
 import BasicInputDialog from '../BasicInputDialog/BasicInputDialog'
@@ -77,8 +76,14 @@ export default function KnowledgeRooms() {
 
     return (
         <div className="flex flex-col gap-1 px-4">
-            <div className="px-4 mb-2 text-white/60 text-sm">
-                Knowledge Rooms
+            <div className="flex items-center justify-between px-4 mb-2 text-white/60">
+                <div className="text-sm">Knowledge Rooms</div>
+                <button
+                    onClick={handleNewKnowledgeRoomDialog}
+                    className="flex gap-2 items-center text-primary/80 cursor-pointer hover:text-primary"
+                >
+                    New <IconPlus size={14} />
+                </button>
             </div>
             <div className="flex flex-col gap-1 max-h-[152px] min-h-[152px] overflow-x-auto">
                 {loading && (
@@ -152,22 +157,18 @@ export default function KnowledgeRooms() {
                         specific topic and chat only on that information.
                     </div>
                 )}
-                {rooms.map((room) => (
-                    <div
-                        onClick={() => handleKnowledgeRoomChange(room)}
-                        key={room.id}
-                        className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg hover:bg-black/40 ${currentKnowledgeRoom?.id === room.id ? 'bg-black/80 text-white' : 'text-white/80'}`}
-                    >
-                        <IconLayoutDashboard />
-                        {room.title}
-                    </div>
-                ))}
+                {!loading &&
+                    rooms.map((room) => (
+                        <div
+                            onClick={() => handleKnowledgeRoomChange(room)}
+                            key={room.id}
+                            className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg hover:bg-black/50 ${currentKnowledgeRoom?.id === room.id ? 'bg-black/50 text-white' : 'text-white/80'}`}
+                        >
+                            <IconLayoutDashboard />
+                            {room.title}
+                        </div>
+                    ))}
             </div>
-            <PrimaryButton
-                text="New Knowledge Room"
-                icon={<IconPlus size={21} />}
-                onClick={handleNewKnowledgeRoomDialog}
-            />
             <BasicInputDialog
                 open={!!openDialog}
                 title="New Knowledge Room"
