@@ -8,10 +8,13 @@ import {
 import { useAtom } from 'jotai'
 import { LIST_VIDEOS } from '@/graphql/queries'
 import { useQuery } from '@apollo/client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ContentLoader from 'react-content-loader'
+import VideoPlayer from '../VideoPlayer/VideoPlayer'
+import { VideoObject } from '@/types'
 
 export default function VideosContainer() {
+    const [currentVideo, setCurrentVideo] = useState<VideoObject | null>(null)
     const [, setCurrentVideos] = useAtom(currentVideosAtom)
     const [sortedVideos] = useAtom(sortedVideosAtom)
     const [currentKnowledgeRoom] = useAtom(currentKnowledgeRoomAtom)
@@ -68,10 +71,19 @@ export default function VideosContainer() {
                         </ContentLoader>
                     ) : (
                         sortedVideos?.map((video) => (
-                            <Video video={video} key={video.id} />
+                            <Video
+                                video={video}
+                                key={video.id}
+                                onClick={setCurrentVideo}
+                            />
                         ))
                     )}
                 </div>
+                <VideoPlayer
+                    url={currentVideo?.videoUrl || ''}
+                    open={!!currentVideo}
+                    onClose={() => setCurrentVideo(null)}
+                />
             </div>
         </div>
     )

@@ -3,9 +3,14 @@ import { RelatedDocument, VideoObject } from '@/types'
 interface VideoSourceProps {
     videos: VideoObject[]
     source: RelatedDocument
+    onClick: (video: VideoObject) => void
 }
 
-export default function VideoSource({ videos, source }: VideoSourceProps) {
+export default function VideoSource({
+    videos,
+    source,
+    onClick,
+}: VideoSourceProps) {
     const currentVideo: VideoObject = videos?.filter(
         (v) => v.id === source?.videoId,
     )?.[0]
@@ -20,7 +25,10 @@ export default function VideoSource({ videos, source }: VideoSourceProps) {
     }
 
     return (
-        <div className="w-full max-w-1/2 bg-black/20 hover:bg-black/40 cursor-pointer rounded-md px-4 py-2 overflow-hidden">
+        <div
+            onClick={() => onClick(currentVideo)}
+            className="w-full max-w-1/2 bg-black/20 hover:bg-black/40 cursor-pointer rounded-md px-4 py-2 overflow-hidden"
+        >
             <div className="text-sm font-bold overflow-hidden text-ellipsis whitespace-nowrap">
                 {currentVideo?.title}
             </div>
