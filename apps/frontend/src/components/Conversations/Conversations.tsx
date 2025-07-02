@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import {
     currentConversationAtom,
     currentKnowledgeRoomAtom,
+    loadingAtom,
 } from '@/state/jotai'
 import { useAtom } from 'jotai'
 import BasicInputDialog from '../BasicInputDialog/BasicInputDialog'
@@ -20,13 +21,18 @@ export default function Conversations() {
     const [openDialog, setOpenDialog] = useState<boolean>(false)
     const [submitLoading, setSubmitLoading] = useState<boolean>(false)
 
+    const [loading, setLoading] = useAtom(loadingAtom)
     const [currentConversation, setCurrentConversation] = useAtom(
         currentConversationAtom,
     )
 
     const [currentKnowledgeRoom] = useAtom(currentKnowledgeRoomAtom)
 
-    const { data, loading, refetch } = useQuery(LIST_CONVERSATIONS, {
+    const {
+        data,
+        loading: cLoading,
+        refetch,
+    } = useQuery(LIST_CONVERSATIONS, {
         skip: !currentKnowledgeRoom?.id,
         variables: {
             knowledgeRoomId: currentKnowledgeRoom?.id,
@@ -47,6 +53,10 @@ export default function Conversations() {
             setCurrentConversation(conversations[0])
         }
     }, [loading, conversations, currentConversation, setCurrentConversation])
+
+    useEffect(() => {
+        setLoading((prev) => ({ ...prev, conversations: cLoading }))
+    }, [cLoading])
 
     /**
      * if the knwoledge room changes,
@@ -120,7 +130,9 @@ export default function Conversations() {
             <div className="flex items-center justify-between px-4 mb-2 text-white/60">
                 <div className="text-sm">Conversations</div>
                 <button
-                    disabled={loading || !currentKnowledgeRoom?.id}
+                    disabled={
+                        loading.conversations || !currentKnowledgeRoom?.id
+                    }
                     onClick={handleNewConversationDialog}
                     className="flex gap-2 items-center text-primary/80 cursor-pointer hover:text-primary disabled:text-primary/30"
                 >
@@ -128,7 +140,7 @@ export default function Conversations() {
                 </button>
             </div>
             <div className="flex flex-col gap-1 max-h-[152px]  overflow-x-auto">
-                {loading && (
+                {loading.conversations && (
                     <ContentLoader
                         uniqueKey="c"
                         speed={1}
@@ -190,7 +202,7 @@ export default function Conversations() {
                         />
                     </ContentLoader>
                 )}
-                {!loading && !conversations?.length && (
+                {!loading.conversations && !conversations?.length && (
                     <div className="px-4 ">
                         Create a Conversation!
                         <br />
@@ -199,16 +211,19 @@ export default function Conversations() {
                         content of your Knowledge Room.
                     </div>
                 )}
-                {conversations.map((conversation) => (
-                    <div
-                        onClick={() => handleConversationChange(conversation)}
-                        key={conversation.id}
-                        className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg hover:bg-black/50 ${currentConversation?.id === conversation.id ? 'bg-black/50 text-white' : 'text-white/80'}`}
-                    >
-                        <IconMessageCircle />
-                        {conversation.title}
-                    </div>
-                ))}
+                {!loading.conversations &&
+                    conversations.map((conversation) => (
+                        <div
+                            onClick={() =>
+                                handleConversationChange(conversation)
+                            }
+                            key={conversation.id}
+                            className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg hover:bg-black/50 ${currentConversation?.id === conversation.id ? 'bg-black/50 text-white' : 'text-white/80'}`}
+                        >
+                            <IconMessageCircle />
+                            {conversation.title}
+                        </div>
+                    ))}
             </div>
             <BasicInputDialog
                 open={!!openDialog}
