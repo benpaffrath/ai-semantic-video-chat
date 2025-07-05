@@ -15,10 +15,15 @@ import { sendVideoEventToSQS } from './helper/sqs'
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
 import { GraphQLError } from 'graphql'
 
+// Lambda client for invoking AI chat processing functions
 const lambdaClient = new LambdaClient({ region: 'eu-central-1' })
 
 const clientResolvers = {
     Query: {
+        /**
+         * Retrieves all knowledge rooms for the authenticated user
+         * Uses user context for data isolation and security
+         */
         listKnowledgeRooms: async (_, __, context: Context) => {
             try {
                 return await listKnowledgeRoomsByUserId(context.userId)
@@ -26,6 +31,10 @@ const clientResolvers = {
                 console.error(e)
             }
         },
+        /**
+         * Lists conversations within a specific knowledge room
+         * Ensures user can only access conversations in their own rooms
+         */
         listConversations: async (
             _,
             { knowledgeRoomId }: { knowledgeRoomId: string },
@@ -40,6 +49,10 @@ const clientResolvers = {
                 console.error(e)
             }
         },
+        /**
+         * Retrieves videos with presigned URLs for secure access
+         * Generates temporary URLs for each video to maintain S3 security
+         */
         listVideos: async (
             _,
             { knowledgeRoomId }: { knowledgeRoomId: string },
@@ -51,6 +64,7 @@ const clientResolvers = {
                     context.userId,
                 )
 
+                // Generate presigned URLs for each video to enable secure access
                 return await Promise.all(
                     videos.map(async (video) => {
                         const videoUrl = await generatePresignedUrl(
@@ -66,6 +80,10 @@ const clientResolvers = {
                 console.error(e)
             }
         },
+        /**
+         * Retrieves chat messages in chronological order
+         * Maintains conversation flow for context-aware responses
+         */
         listChatMessages: async (
             _,
             {
@@ -86,6 +104,10 @@ const clientResolvers = {
         },
     },
     Mutation: {
+        /**
+         * Creates a new knowledge room for organizing video content
+         * Each room acts as a container for related videos and conversations
+         */
         createKnowledgeRoom: async (
             _,
             { title }: { title: string },
@@ -97,6 +119,10 @@ const clientResolvers = {
                 console.error(e)
             }
         },
+        /**
+         * Creates a conversation thread within a knowledge room
+         * Enables multiple chat sessions per room for different topics
+         */
         createConversation: async (
             _,
             {
@@ -115,7 +141,12 @@ const clientResolvers = {
                 console.error(e)
             }
         },
+        /**
+         * Generates presigned URLs for direct file uploads
+         * Allows clients to upload large files directly to S3 without server proxying
+         */
         createUploadUrls: async (_, { input }, context: Context) => {
+            // Create upload promises with user-specific file paths
             const promises = input.map(
                 (i: {
                     fileName: string
@@ -142,6 +173,7 @@ const clientResolvers = {
                 promises.map((p) => p.promise),
             )
 
+            // Map resolved URLs back to their corresponding file metadata
             return resolvedUploadUrls.map((url, index) => ({
                 uploadUrl: url,
                 fileName: promises[index].fileName,
@@ -150,6 +182,10 @@ const clientResolvers = {
                 id: promises[index].id,
             }))
         },
+        /**
+         * Creates video metadata and triggers transcription processing
+         * Sends video to SQS queue for asynchronous transcription by Lambda
+         */
         createVideo: async (
             _,
             { input, knowledgeRoomId },
@@ -167,6 +203,7 @@ const clientResolvers = {
                     context.userId,
                 )
 
+                // Trigger asynchronous transcription processing
                 const messageId = await sendVideoEventToSQS(
                     video,
                     knowledgeRoomId,
@@ -180,24 +217,31 @@ const clientResolvers = {
                 console.error(e)
             }
         },
+        /**
+         * Processes chat messages with AI-powered responses
+         * Invokes Lambda function for semantic search and response generation
+         */
         sendChatMessage: async (
             _,
             { input, knowledgeRoomId, conversationId },
             context: Context,
         ) => {
             try {
+                // Retrieve conversation history for context
                 const history = await listChatMessagesByConversation(
                     knowledgeRoomId,
                     conversationId,
                     context.userId,
                 )
 
+                // Sort history by creation time for proper context ordering
                 const sortedHistory = history.sort(
                     (a, b) =>
                         new Date(b.createdAt).getTime() -
                         new Date(a.createdAt).getTime(),
                 )
 
+                // Store user message first
                 const message = await insertChatMessage(
                     input.id,
                     input.content,
@@ -208,6 +252,7 @@ const clientResolvers = {
                     context.userId,
                 )
 
+                // Invoke AI processing Lambda with conversation context
                 const command = new InvokeCommand({
                     FunctionName: process.env.CHATS_LAMBDA_ARN,
                     Payload: Buffer.from(
@@ -227,6 +272,7 @@ const clientResolvers = {
                         Buffer.from(response.Payload).toString(),
                     )
 
+                    // Extract video segments that were referenced in the response
                     const relatedDocuments =
                         parsedResponse?.metadata?.map((m) => ({
                             videoId: m.video_id,
@@ -236,7 +282,7 @@ const clientResolvers = {
 
                     console.log(parsedResponse)
 
-                    // Insert response message to DB
+                    // Store AI response with semantic search references
                     const resMessage = await insertChatMessage(
                         nanoid(),
                         parsedResponse.answer,

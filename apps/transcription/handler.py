@@ -1,14 +1,25 @@
+"""
+AWS Lambda handler for video transcription processing.
+
+This module handles the extraction of audio from video files, transcription
+of audio segments, and coordination with other services via SQS.
+"""
 import json
 import logging
 import os
-from helper import download_from_s3, extract_audio, replace_extension, send_to_sqs, success_response, error_response, transcribe_audio, update_video_status, split_audio_on_silence_ffmpeg, upload_json_to_s3
+from helper import (
+    download_from_s3, extract_audio, replace_extension, send_to_sqs,
+    success_response, error_response, transcribe_audio, update_video_status,
+    split_audio_on_silence_ffmpeg, upload_json_to_s3
+)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 S3_BUCKET_NAME = os.environ.get("S3_VIDEO_BUCKET_NAME")
 
-def lambda_handler(event, context=None):
+
+def lambda_handler(event, _context=None):
     """
     AWS Lambda handler to process video-to-audio extraction from S3 objects.
     """
@@ -57,21 +68,25 @@ def lambda_handler(event, context=None):
                     })
 
                 full_text += partial["text"].strip() + " "
-            
+
             transcript = {
                 "text": full_text.strip(),
                 "segments": all_segments
-            }    
+            }
 
             # 5. Save transcript to S3
             transcript_key = f"{user_id}/{os.path.splitext(video_key)[0]}_transcript.json"
             upload_json_to_s3(S3_BUCKET_NAME, transcript_key, transcript)
 
             # 6. Update the video status in the databae
-            update_video_status(knowledge_room_id=knowledge_room_id, video_id=video_id, new_status="EMBEDDINGS_CREATING")
+            update_video_status(
+                knowledge_room_id=knowledge_room_id,
+                video_id=video_id,
+                new_status="EMBEDDINGS_CREATING"
+            )
 
             # 7. Send SQS event to queue for further processing
-            messageId = send_to_sqs({
+            message_id = send_to_sqs({
                 "userId": user_id,
                 "videoId": video_id,
                 "videoKey": video_key,
@@ -79,7 +94,7 @@ def lambda_handler(event, context=None):
                 "transcriptKey": transcript_key
             })
 
-            return success_response({'messageId': messageId})
+            return success_response({'messageId': message_id})
 
         except Exception as e:
             logger.error("Error processing record: %s", str(e))

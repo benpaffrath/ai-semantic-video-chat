@@ -13,11 +13,15 @@ import {
     Video,
 } from '../types'
 
+// DynamoDB client configured for eu-central-1 region
 const client = new DynamoDBClient({
     region: 'eu-central-1',
 })
 
-// Function to create knowledge rooms in the dynamodb
+/**
+ * Creates a new knowledge room with unique ID and metadata
+ * Uses PK: ROOM#{id}, SK: METADATA pattern for single-table design
+ */
 export async function insertKnowledgeRoom(
     title: string,
     userId: string,
@@ -47,7 +51,10 @@ export async function insertKnowledgeRoom(
     }
 }
 
-// Function to create a chat conversation in the dynamodb
+/**
+ * Creates a conversation within a knowledge room
+ * Uses PK: ROOM#{knowledgeRoomId}, SK: CONVERSATION#{id} for hierarchical access
+ */
 export async function insertConversation(
     title: string,
     knowledgeRoomId: string,
@@ -78,6 +85,10 @@ export async function insertConversation(
     }
 }
 
+/**
+ * Stores video metadata with initial transcription status
+ * Video files are stored separately in S3, this contains metadata and processing state
+ */
 export async function insertVideo(
     id: string,
     title: string,
@@ -89,6 +100,7 @@ export async function insertVideo(
     userId: string,
 ) {
     const createdAt = new Date().toUTCString()
+    // Initial status indicates transcription is being processed
     const status = 'TRANSCRIPTION_CREATING'
 
     const params: PutItemCommandInput = {
@@ -127,6 +139,10 @@ export async function insertVideo(
     }
 }
 
+/**
+ * Stores chat messages with semantic search references
+ * RelatedDocuments contain video segments that were used to generate the response
+ */
 export async function insertChatMessage(
     messageId: string,
     content: string,
@@ -141,6 +157,7 @@ export async function insertChatMessage(
     const params: PutItemCommandInput = {
         TableName: process.env.SEMANTIC_VIDEO_CHAT_TABLE_NAME,
         Item: {
+            // Composite key allows efficient querying of messages within a conversation
             PK: { S: `ROOM#${knowledgeRoomId}#CONVERSATION#${conversationId}` },
             SK: { S: `MESSAGE#${messageId}` },
             type: { S: 'ChatMessage' },
@@ -176,7 +193,10 @@ export async function insertChatMessage(
     }
 }
 
-// Query all knowledge rooms by userId (secondary index)
+/**
+ * Retrieves all knowledge rooms for a user using GSI
+ * Uses UserIdIndex to efficiently query by userId and filter by type
+ */
 export async function listKnowledgeRoomsByUserId(
     userId: string,
 ): Promise<KnowledgeRoom[]> {
@@ -198,6 +218,7 @@ export async function listKnowledgeRoomsByUserId(
 
     return (
         result?.Items?.map((item) => ({
+            // Extract room ID from PK (ROOM#{id})
             id: item.PK.S!.split('#')[1],
             title: item.title.S!,
             createdAt: item.createdAt.S!,
@@ -205,7 +226,10 @@ export async function listKnowledgeRoomsByUserId(
     )
 }
 
-// Query all knowledge rooms by knowledeRoomId and userId (secondary index)
+/**
+ * Lists conversations within a knowledge room
+ * Uses begins_with to efficiently query all conversation items
+ */
 export async function listConversationsByKnowledgeRoom(
     knowledgeRoomId: string,
     userId: string,
@@ -225,6 +249,7 @@ export async function listConversationsByKnowledgeRoom(
 
     return (
         result?.Items?.map((item) => ({
+            // Extract conversation ID from SK (CONVERSATION#{id})
             id: item.SK.S!.split('#')[1],
             title: item.title.S!,
             createdAt: item.createdAt.S!,
@@ -232,6 +257,10 @@ export async function listConversationsByKnowledgeRoom(
     )
 }
 
+/**
+ * Retrieves all videos in a knowledge room with metadata
+ * Includes processing status and video file references
+ */
 export async function listVideosByKnowledgeRoom(
     knowledgeRoomId: string,
     userId: string,
@@ -251,6 +280,7 @@ export async function listVideosByKnowledgeRoom(
 
     return (
         result?.Items?.map((item) => ({
+            // Extract video ID from SK (VIDEO#{id})
             id: item.SK.S!.split('#')[1],
             title: item.title.S!,
             duration: parseFloat(item.metadata?.M?.duration.N || '0'),
@@ -264,6 +294,10 @@ export async function listVideosByKnowledgeRoom(
     )
 }
 
+/**
+ * Retrieves chat messages in chronological order
+ * Uses ScanIndexForward: true to maintain conversation flow
+ */
 export async function listChatMessagesByConversation(
     knowledgeRoomId: string,
     conversationId: string,
@@ -280,13 +314,15 @@ export async function listChatMessagesByConversation(
             ':skPrefix': { S: 'MESSAGE#' },
             ':userId': { S: userId },
         },
-        ScanIndexForward: true, // sort ascending by SK (i.e., by created order)
+        // Ensures messages are returned in chronological order
+        ScanIndexForward: true,
     })
 
     const result = await client.send(command)
 
     return (
         result?.Items?.map((item) => ({
+            // Extract message ID from SK (MESSAGE#{id})
             id: item.SK.S!.split('#')[1],
             content: item.metadata?.M?.content.S || '',
             isUserMessage: item.metadata?.M?.isUserMessage.BOOL || false,

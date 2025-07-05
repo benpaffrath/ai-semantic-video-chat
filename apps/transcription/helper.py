@@ -1,6 +1,13 @@
-import os
+"""
+Helper module for transcription service.
+
+This module provides utility functions for audio transcription, file handling,
+and AWS service interactions.
+"""
 import json
 import logging
+import math
+import os
 import subprocess
 from pathlib import Path
 
@@ -40,11 +47,13 @@ def download_from_s3(bucket: str, key: str, local_path: str) -> None:
     Downloads a file from S3 to a local path.
     """
     try:
-        logger.info(f"Downloading s3://{bucket}/{key} to {local_path}")
+        logger.info("Downloading s3://%s/%s to %s", bucket, key, local_path)
+
         s3.download_file(bucket, key, local_path)
+
         logger.info("Download done!")
     except ClientError as e:
-        logger.error(f"Failed to download file from S3: {e}")
+        logger.error("Failed to download file from S3: %s", e)
         raise
 
 
@@ -66,26 +75,16 @@ def extract_audio(input_path: str, output_path: str) -> None:
         output_path
     ]
 
-    command2 = [
-        "/opt/bin/ffmpeg",
-        "-i", input_path,
-        "-vn",                   # Kein Video
-        "-acodec", "libmp3lame", # MP3-Codec explizit setzen
-        "-b:a", "16k",           # Niedrigste sinnvolle Bitrate für Sprache
-        "-ar", "16000",          # Samplingrate 16 kHz
-        "-ac", "1",              # Mono
-        output_path
-    ]
-
-    logger.info(f"Extracting audio from {input_path} to {output_path}")
-    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.info("Extracting audio from %s to %s", input_path, output_path)
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
 
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg failed: {result.stderr.decode()}")
 
     size_bytes = os.path.getsize(output_path)
     size_mb = size_bytes / (1024 * 1024)
-    logger.info(f"Extracted audio file size: {size_mb:.2f} MB")    
+
+    logger.info("Extracted audio file size: %.2f MB", size_mb)
 
 
 def replace_extension(filename: str, new_ext: str) -> str:
@@ -119,7 +118,7 @@ def send_to_sqs(message_body: dict) -> dict:
     """
     Sends a message to the configured SQS queue.
     """
-    logger.info(f"Sending message to SQS: {message_body}")
+    logger.info("Sending message to SQS: %s", message_body)
 
     return sqs.send_message(
         QueueUrl=SQS_QUEUE_URL,
@@ -131,7 +130,8 @@ def transcribe_audio(audio_file_path: str) -> dict:
     """
     Transcribes audio using OpenAI Whisper model.
     """
-    logger.info(f"Transcribing audio: {audio_file_path}")
+    logger.info("Transcribing audio: %s", audio_file_path)
+
     with open(audio_file_path, "rb") as f:
         transcript = openai_client.audio.transcriptions.create(
             model="whisper-1",
@@ -148,7 +148,8 @@ def transcribe_audio(audio_file_path: str) -> dict:
         for seg in transcript.segments
     ]
 
-    logger.info(f"Transcription done!")
+    logger.info("Transcription done!")
+
     return {
         "text": transcript.text.strip(),
         "segments": segments
@@ -171,20 +172,18 @@ def update_video_status(knowledge_room_id: str, video_id: str, new_status: str) 
             ExpressionAttributeValues={":new_status": {"S": new_status}}
         )
     except ClientError as e:
-        logger.error(f"Error updating video status: {e}")
+        logger.error("Error updating video status: %s", e)
         raise
 
-import re
 
-import math
-
-def split_audio_on_silence_ffmpeg(input_path, video_id, silence_thresh="-40dB", min_silence_dur=1.0, max_chunks=10):
+def split_audio_on_silence_ffmpeg(input_path, video_id, silence_thresh="-40dB",
+                                 min_silence_dur=1.0, max_chunks=10):
     """
     Splits an audio file into chunks based on silence using ffmpeg.
     Reduces number of chunks to max_chunks by grouping.
     Returns a list of dicts: [{path, start, duration}]
     """
-    logger.info(f"Splitting audio file: {input_path}")
+    logger.info("Splitting audio file: %s", input_path)
 
     # Step 1: Detect silence
     command = [
@@ -202,6 +201,7 @@ def split_audio_on_silence_ffmpeg(input_path, video_id, silence_thresh="-40dB", 
     # Step 2: Parse silence times
     lines = result.stderr.splitlines()
     silence_times = []
+
     for line in lines:
         if "silence_start:" in line:
             silence_times.append(("start", float(line.split("silence_start:")[1].strip())))
@@ -212,6 +212,7 @@ def split_audio_on_silence_ffmpeg(input_path, video_id, silence_thresh="-40dB", 
     # Step 3: Create speech segments (between silence)
     speech_segments = []
     last_end = 0.0
+
     for i in range(0, len(silence_times), 2):
         if i + 1 >= len(silence_times):
             break
@@ -229,6 +230,7 @@ def split_audio_on_silence_ffmpeg(input_path, video_id, silence_thresh="-40dB", 
     dur_result = subprocess.run(duration_cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
     dur_lines = dur_result.stderr.splitlines()
     total_duration = None
+
     for line in dur_lines:
         if "Duration:" in line:
             dur_text = line.split("Duration:")[1].split(",")[0].strip()
@@ -259,7 +261,7 @@ def split_audio_on_silence_ffmpeg(input_path, video_id, silence_thresh="-40dB", 
     for chunk_index, (start, end) in enumerate(grouped):
         duration = end - start
         output_path = f"/tmp/{video_id}/chunk_{chunk_index:03}.mp3"
-        logger.info(f"Creating chunk {chunk_index}: {start:.2f}s to {end:.2f}s")
+        logger.info("Creating chunk %d: %.2fs to %.2fs", chunk_index, start, end)
 
         export_cmd = [
             "/opt/bin/ffmpeg",
@@ -271,7 +273,8 @@ def split_audio_on_silence_ffmpeg(input_path, video_id, silence_thresh="-40dB", 
             "-ac", "1",
             output_path
         ]
-        subprocess.run(export_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(export_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                      check=True)
 
         chunk_infos.append({
             "path": output_path,
@@ -281,10 +284,11 @@ def split_audio_on_silence_ffmpeg(input_path, video_id, silence_thresh="-40dB", 
 
     return chunk_infos
 
+
 def upload_json_to_s3(bucket: str, key: str, data: dict) -> None:
     """
     Uploads a JSON file to S3.
     """
     json_bytes = json.dumps(data, indent=2).encode("utf-8")
     s3.put_object(Bucket=bucket, Key=key, Body=json_bytes, ContentType="application/json")
-    logger.info(f"Uploaded JSON to s3://{bucket}/{key}")
+    logger.info("Uploaded JSON to s3://%s/%s", bucket, key)

@@ -1,5 +1,6 @@
 /**
  * Generates a preview image (thumbnail) from a given video file at a specified time.
+ * Creates canvas-based thumbnail for video preview in UI
  *
  * @param {File} file
  * @param {number} [seekTo=1]
@@ -14,12 +15,14 @@ export const generateVideoPreviewImage = (
         video.preload = 'metadata'
 
         video.onloadedmetadata = () => {
+            // Adjust seek time if video is shorter than requested position
             if (video.duration < seekTo) seekTo = 0
             video.currentTime = seekTo
         }
 
         video.onseeked = () => {
             const canvas = document.createElement('canvas')
+            // Maintain aspect ratio while fitting within thumbnail dimensions
             const maxWidth = 160
             const maxHeight = 90
             const ratio = Math.min(
@@ -35,6 +38,7 @@ export const generateVideoPreviewImage = (
                 reject('Canvas context is null')
                 return
             }
+            // Draw video frame to canvas and convert to data URL
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
             const imgUrl = canvas.toDataURL('image/png')
             resolve(imgUrl)
@@ -49,6 +53,7 @@ export const generateVideoPreviewImage = (
 
 /**
  * Retrieves the duration of a given video file in seconds.
+ * Uses HTML5 video element to extract metadata without full video loading
  *
  * @param {File} file
  * @returns {Promise<number>}
@@ -59,6 +64,7 @@ export const getVideoDuration = (file: File): Promise<number> => {
         video.preload = 'metadata'
 
         video.onloadedmetadata = () => {
+            // Clean up object URL immediately after metadata extraction
             URL.revokeObjectURL(video.src)
             resolve(video.duration)
         }

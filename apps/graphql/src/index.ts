@@ -7,18 +7,29 @@ import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
 
 dotenv.config()
 
+// GraphQL Yoga server configuration with custom context
 const yoga = createYoga({
     graphqlEndpoint: '/graphql',
     schema,
     context,
 })
 
+/**
+ * AWS Lambda handler that adapts API Gateway events to GraphQL Yoga
+ * Converts API Gateway request format to standard HTTP request for Yoga
+ */
 export async function handler(
     event: APIGatewayEvent,
     lambdaContext: Context,
 ): Promise<APIGatewayProxyResult> {
-    const response = await yoga.fetch(
+    // Convert API Gateway path to full URL for Yoga fetch
+    const url = new URL(
         event.path,
+        `https://${event.headers.Host || 'localhost'}`,
+    )
+
+    const response = await yoga.fetch(
+        url,
         {
             method: event.httpMethod,
             headers: event.headers as HeadersInit,
@@ -35,6 +46,7 @@ export async function handler(
         },
     )
 
+    // Convert Yoga response back to API Gateway format
     const responseHeaders = Object.fromEntries(response.headers.entries())
 
     return {
@@ -45,7 +57,10 @@ export async function handler(
     }
 }
 
-// Check if the code is running in a local environment
+/**
+ * Local development server setup
+ * Only runs when IS_LOCAL environment variable is set
+ */
 if (process.env.IS_LOCAL) {
     const server = createServer(yoga)
 
