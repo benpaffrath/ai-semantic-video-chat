@@ -5,7 +5,7 @@ locals {
   function_handler     = "handler.lambda_handler"
   function_runtime     = "python3.11"
   function_timeout     = 900
-  function_memory_size = 512
+  function_memory_size = 4096
   function_zip         = "../apps/transcription/dist/lambda.zip"
 }
 
@@ -23,6 +23,10 @@ resource "aws_lambda_function" "transcription-function" {
   layers = [var.ffmpeg_layer_arn, var.langchain_layer_arn]
 
   memory_size = local.function_memory_size
+
+  ephemeral_storage {
+    size = 4096
+  }
 
   environment {
     variables = {

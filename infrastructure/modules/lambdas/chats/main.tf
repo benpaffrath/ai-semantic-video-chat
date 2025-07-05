@@ -5,7 +5,7 @@ locals {
   function_handler     = "handler.lambda_handler"
   function_runtime     = "python3.11"
   function_timeout     = 900
-  function_memory_size = 512
+  function_memory_size = 1024
   function_zip         = "../apps/chats/dist/lambda.zip"
 }
 

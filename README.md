@@ -2,6 +2,8 @@
 
 AI Semantic Video Chat is a modular, serverless platform for semantic search and chat over video content. It leverages modern cloud infrastructure, vector databases, and AI models to enable users to interact with video knowledge bases using natural language.
 
+DEMO: https://dev.semantic-video-chat.realyte.digital/
+
 ## Overview
 
 The project is organized into several services and infrastructure modules:

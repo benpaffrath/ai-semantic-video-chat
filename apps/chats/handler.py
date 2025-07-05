@@ -1,20 +1,40 @@
-import logging
-import json
+"""
+Chat Handler Module
 
-from agent import CustomAgentExecutor
-from pinecone_client import final_answer, init_embedding_and_pinecone, init_vectorstore, semantic_search
-from helper import convert_history, load_and_set_api_keys
-from langchain_openai import ChatOpenAI
+This module provides the main Lambda handler for processing chat messages
+in the AI semantic video chat application.
+It integrates with OpenAI's GPT models, Pinecone vector database,
+and custom agent execution to provide contextual responses based
+on video content and conversation history.
+
+The handler processes user messages, maintains conversation context,
+and leverages semantic search to retrieve relevant information
+from video embeddings stored in Pinecone.
+
+Dependencies:
+    - OpenAI GPT-4o-mini for language model processing
+    - Pinecone for vector similarity search
+    - Custom agent executor for tool-based reasoning
+    - LangChain for prompt management and chat history
+"""
+
+import json
+import logging
 
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.runnables.base import RunnableSerializable
-from langchain_core.messages import ToolMessage
+from langchain_openai import ChatOpenAI
+
+from agent import CustomAgentExecutor
+from helper import convert_history, load_and_set_api_keys
+from pinecone_client import (
+    final_answer,
+    init_embedding_and_pinecone,
+    init_vectorstore,
+    semantic_search
+)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
-tools = [semantic_search]
-
 
 prompt = ChatPromptTemplate.from_messages([
     ("system", """\
@@ -41,7 +61,44 @@ Do NOT call "final_answer" first. If you want to give an answer, you need to ret
 ])
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, _context=None):
+    """
+    AWS Lambda handler function for processing chat messages.
+    
+    This function serves as the main entry point for the chat service. It processes incoming
+    chat messages, initializes the necessary services (OpenAI, Pinecone), maintains conversation
+    context, and returns AI-generated responses based on semantic search of video content.
+    
+    Args:
+        event (dict): AWS Lambda event containing:
+            - userId (str): Unique identifier for the user
+            - knowledgeRoomId (str): Identifier for the knowledge room/video context
+            - message (str): The user's input message
+            - history (list, optional): Previous conversation messages
+        context: AWS Lambda context object (unused)
+    
+    Returns:
+        dict: Response containing:
+            - answer (str): The AI-generated response
+            - metadata (list): List of metadata from tools used during processing
+            - contents (list): List of content retrieved during processing
+    
+    Raises:
+        json.JSONDecodeError: If the result or metadata cannot be parsed as JSON
+        TypeError: If the result is not a string or dictionary
+        Exception: For other processing errors
+    
+    Example:
+        >>> event = {
+        ...     "userId": "user123",
+        ...     "knowledgeRoomId": "room456",
+        ...     "message": "What did the video say about AI?",
+        ...     "history": [{"role": "user", "content": "Hello"}]
+        ... }
+        >>> result = lambda_handler(event, None)
+        >>> print(result["answer"])
+        "Based on the video content..."
+    """
     print(event)
 
     user_id = event["userId"]
@@ -55,7 +112,7 @@ def lambda_handler(event, context):
     history_raw = event.get("history", [])
     chat_history = convert_history(history_raw)
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
     tools = [final_answer, semantic_search]
 

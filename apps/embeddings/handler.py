@@ -1,7 +1,13 @@
+"""
+AWS Lambda handler for processing video transcripts and creating embeddings.
+
+This module handles the embedding generation process for video transcripts.
+It downloads transcripts from S3, chunks them, and upserts the embeddings to Pinecone.
+"""
 import json
-import boto3
-import os
 import logging
+import os
+import boto3
 from pinecone_client import init_client, upsert_chunks_to_pinecone
 from helper import chunk_transcript, update_video_status, download_from_s3
 
@@ -43,15 +49,15 @@ def load_and_set_api_keys() -> None:
     """
     pinecone_secret_arn = os.environ["PINECONE_SECRET_ARN"]
     openai_secret_arn = os.environ["OPENAI_SECRET_ARN"]
-    
+
     pinecone_api_key = get_api_key_from_secret(pinecone_secret_arn)
     openai_api_key = get_api_key_from_secret(openai_secret_arn)
-    
+
     os.environ["PINECONE_API_KEY"] = pinecone_api_key
     os.environ["OPENAI_API_KEY"] = openai_api_key
 
 
-def lambda_handler(event: dict, context: object) -> dict:
+def lambda_handler(event: dict, _context=None) -> dict:
     """
     AWS Lambda handler function to process incoming records containing video transcripts,
     split the transcripts into chunks, and upsert them into a Pinecone index.
@@ -80,14 +86,22 @@ def lambda_handler(event: dict, context: object) -> dict:
 
             transcript_segments = transcript.get("segments", [])
 
-            chunks = chunk_transcript(transcript_segments, chunk_size=1000, chunk_overlap=100)
+            chunks = chunk_transcript(
+                transcript_segments, chunk_size=1000, chunk_overlap=100
+            )
 
             namespace = f"{user_id}_{knowledge_room_id}"
-            upsert_chunks_to_pinecone(chunks, namespace, user_id, video_id, knowledge_room_id)
+            upsert_chunks_to_pinecone(
+                chunks, namespace, user_id, video_id, knowledge_room_id
+            )
 
-            update_video_status(knowledge_room_id=knowledge_room_id, video_id=video_id, new_status="DONE")
+            update_video_status(
+                knowledge_room_id=knowledge_room_id,
+                video_id=video_id,
+                new_status="DONE"
+            )
         except Exception as e:
-            logger.error(f"Error processing record: {e}")
+            logger.error("Error processing record: %s", e)
 
     return {
         'statusCode': 200,

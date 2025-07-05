@@ -1,40 +1,49 @@
+"""
+Pinecone client module for handling vector embeddings and storage.
+"""
 import os
 import logging
 from typing import List, Dict, Any
-from pinecone import Pinecone, ServerlessSpec
+# pylint: disable=import-error
+# These imports come from the Lambda layer and are not available during local development
+from pinecone import Pinecone
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
+# pylint: enable=import-error
 
 logger = logging.getLogger()
 
-pc = None
-embedding_model = None
-pinecone_index = None
+PC = None
+EMBEDDING_MODEL = None
+PINECONE_INDEX = None
 
 PINECONE_INDEX_NAME = os.environ["PINECONE_INDEX_NAME"]
 
+
 def init_client():
-    global pc, embedding_model, pinecone_index
-    
-    if pc is not None and embedding_model is not None and pinecone_index is not None:
+    """Initialize Pinecone client and embedding model."""
+    global PC, EMBEDDING_MODEL, PINECONE_INDEX
+
+    if PC is not None and EMBEDDING_MODEL is not None and PINECONE_INDEX is not None:
         # already initialized
         return
-    
+
     pinecone_api_key = os.environ.get("PINECONE_API_KEY")
 
     if not pinecone_api_key:
         raise ValueError("PINECONE_API_KEY not set in environment variables")
-    
-    pc = Pinecone(api_key=pinecone_api_key)
-    
+
+    PC = Pinecone(api_key=pinecone_api_key)
+
     openai_api_key = os.environ.get("OPENAI_API_KEY")
 
     if not openai_api_key:
         raise ValueError("OPENAI_API_KEY not set in environment variables")
-    
-    embedding_model = OpenAIEmbeddings(openai_api_key=openai_api_key)
-    
-    pinecone_index = pc.Index(PINECONE_INDEX_NAME)
+
+    EMBEDDING_MODEL = OpenAIEmbeddings(openai_api_key=openai_api_key)
+
+    PINECONE_INDEX = PC.Index(PINECONE_INDEX_NAME)
+
 
 def upsert_chunks_to_pinecone(
     chunks: List[Dict[str, Any]],
@@ -43,6 +52,7 @@ def upsert_chunks_to_pinecone(
     video_id: str,
     knowledge_room_id: str,
 ):
+    """Upsert text chunks to Pinecone vector store with metadata."""
     docs = []
     metadatas = []
 
@@ -59,7 +69,7 @@ def upsert_chunks_to_pinecone(
 
     PineconeVectorStore.from_texts(
         texts=docs,
-        embedding=embedding_model,
+        embedding=EMBEDDING_MODEL,
         index_name=PINECONE_INDEX_NAME,
         metadatas=metadatas,
         namespace=namespace
